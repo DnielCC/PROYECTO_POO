@@ -7,12 +7,7 @@
     <link rel="stylesheet", href="{{url_for('static',filename='C_Vusuario.css')}}"> 
 </head>
 <body>
-    <div class="img">
-        <a>
-            <img  id=logo-img src="static/images/logo.png">
-        </a>
-    </div>
-    <div> 
+    <div id="h1-txt"> 
         <h1>
             Ingresa la Información para la creación de tu cuenta
         </h1>
@@ -20,7 +15,7 @@
     <div class="content_informacion">   
         <form class="content_froms">
             <label>Ciudad de recidencia</label>
-                <select id="select_ciudades" name="ciudad">
+                <select id="select_ciudades" name="ciudad" style="text-align: center;">
                         <option value="Amealco de Bonfil">Amealco de Bonfil</option>
                         <option value="Arroyo Seco">Arroyo Seco</option>
                         <option value="Cadereyta de Montes">Cadereyta de Montes</option>
@@ -40,8 +35,10 @@
                         <option value="Tequisquiapan">Tequisquiapan</option>
                         <option value="Tolimán">Tolimán</option>
                 </select>
+                <br>
             <label>Codigo postal</label>
-            <input>
+            <input name="codigo_postal" style="text-align: center;">
+            <br>
             <input type="submit">
         </form>
 
