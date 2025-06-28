@@ -1,31 +1,29 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="fade-in">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio</title>
     <link rel="stylesheet" href="{{url_for('static',filename='Inicio.css')}}"> 
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="div-header">
-        <header >  
-            <div class="logo">
-                <a href="http://127.0.0.1:5000">
-                <img class="header-logo"src="static/images/logo.png" width="100px">
-                </a> 
-            </div>
-                <nav class="hed-nav">
-                    <a href="http://127.0.0.1:5000/Forms">Registrate</a>
-                    <a href="http://127.0.0.1:5000/login">Iniciar Sesión</a>
-                </nav>
-      
-        </header>
-    </div>
-        <div class="container-body">
-                <h1 id="txtdiv-body">Bolsa de trabajo</h1>
-
+    <div class="background-blur"></div>
+    <header class="main-header">
+        <div class="logo">
+            <a href="/">
+                <img class="header-logo" src="static/images/logo.png" width="80" alt="Logo">
+            </a>
         </div>
-         
+        <nav class="header-nav">
+            <a class="nav-btn" href="/Forms">Regístrate</a>
+            <a class="nav-btn" href="/login">Iniciar Sesión</a>
+        </nav>
+    </header>
+    <main class="main-content">
+        <h1 class="main-title">Workify</h1>
+        <p class="subtitle">Encuentra. Postula. Trabaja.</p>
+        <a href="/Forms" class="cta-btn">Comenzar ahora</a>
+    </main>
 </body>
 </html>
