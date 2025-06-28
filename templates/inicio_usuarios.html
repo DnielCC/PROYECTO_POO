@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Empleo - Buscar Trabajo</title>
+    <link rel="stylesheet" href="../../static/Inicio_usuarios.css">
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">Portal de Empleo</a>
+            <ul class="nav-menu">
+                <li><a href="http://127.0.0.1:5000">Inicio</a></li>
+                <li><a href="#vacantes">Vacantes</a></li>
+                <li><a href="#mi-perfil">Mi Perfil</a></li> 
+                <li><a href="#postulaciones">Mis Postulaciones</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+        <!-- Sección hero -->
+        <section class="hero-section">
+            <h1>Encuentra tu trabajo ideal</h1>
+            <p>Explora miles de oportunidades laborales y encuentra la posición perfecta para tu carrera profesional.</p>
+        </section>
+
+        <!-- Barra de búsqueda -->
+        <section class="search-box">
+            <form class="search-form">
+                <div class="form-group">
+                    <label for="busqueda">¿Qué trabajo buscas?</label>
+                    <input type="text" id="busqueda" name="busqueda" placeholder="Ej: Desarrollador, Marketing, Administrativo...">
+                </div>
+                <div class="form-group">
+                    <label for="ubicacion">¿Dónde?</label>
+                    <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej: Madrid, Barcelona, Remoto...">
+                </div>
+                <button type="submit" class="btn-search">Buscar</button>
+            </form>
+        </section>
+
+    </div>
+</body>
+</html> 

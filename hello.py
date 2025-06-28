@@ -111,6 +111,7 @@ def info():
     
     return render_template('Vusuario.html')
 
+<<<<<<< HEAD
 # Crear las tablas de la base de datos
 def create_tables():
     with app.app_context():
@@ -135,3 +136,8 @@ if __name__ == "__main__":
     create_tables()
     app.run(debug=True)
 
+=======
+@app.route('/inicio/usuarios')
+def inicio_usuarios(): 
+    return render_template('inicio_usuarios.html')
+>>>>>>> 889ab90fed7598423d334fd22af0003e90fcea8b
