@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='Forms.css')}}"> 
+</head>
+<body> 
+    <div class="div-contarinerfull" >
+            <nav class="inicio-regreso" >
+                <a href="http://127.0.0.1:5000">
+                    <img  id ="imagen-ini"src="static/images/fecha_inis.png" >  
+                </a>  
+            </nav> 
+        <div class="section-form">
+            <form  class="form" action="" method="post" novalidate>
+               <!-- tag de la clase -->
+                {{ form.hidden_tag() }}
+
+                <!-- Titulo de Inicio de sesion -->
+                <h2 id="txt_form">Registrate</h2>
+                <!-- laber de nombre el imput es del objeto de flaskwtf -->
+                <label class="form" for="nombre" >Nombre</label >
+                    {{ form.name(size=64) }}
+                <!-- manejo de errores de flaskwtf -->
+                {% for error in form.name.errors %}
+                <span style="color: red;">{{ error }}</span>
+                {% endfor %}
+                
+                <label class="form" for="Correo">Correo</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                    <span style="color: red;"> {{error}}</span>
+                   {% endfor %} 
+                <label for="Contraseña" class="form">Contraseña</label>
+                    {{ form.password }}
+                    {% for error in form.password.errors %}
+                    <span style="color:red";> {{error}} </span>
+                    {% endfor %}
+
+                <label for="confirmar" class="form">Confirma contraseña</label>
+                    {{form.confirmpassword}}
+                    {% for error in form.confirmpassword.errors %}
+                    <span style="color:red";> {{error}} </span>
+                    {% endfor %}
+
+                    <br><br>   
+                <input id="formsubmit" type="submit"  >
+            </form> 
+        </div>
+    </div>
+</body>

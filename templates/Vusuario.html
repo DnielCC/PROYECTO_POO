@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información</title>
+    <link rel="stylesheet", href="{{url_for('static',filename='C_Vusuario.css')}}"> 
+</head>
+<body>
+    <div class="img">
+        <a>
+            <img  id=logo-img src="static/images/logo.png">
+        </a>
+    </div>
+    <div> 
+        <h1>
+            Ingresa la Información para la creación de tu cuenta
+        </h1>
+    </div>
+    <div class="content_informacion">   
+        <form class="content_froms">
+            <label>Ciudad de recidencia</label>
+                <select id="select_ciudades" name="ciudad">
+                        <option value="Amealco de Bonfil">Amealco de Bonfil</option>
+                        <option value="Arroyo Seco">Arroyo Seco</option>
+                        <option value="Cadereyta de Montes">Cadereyta de Montes</option>
+                        <option value="Colón">Colón</option>
+                        <option value="Corregidora">Corregidora</option>
+                        <option value="Ezequiel Montes">Ezequiel Montes</option>
+                        <option value="Huimilpan">Huimilpan</option>
+                        <option value="Jalpan de Serra">Jalpan de Serra</option>
+                        <option value="Landa de Matamoros">Landa de Matamoros</option>
+                        <option value="El Marqués">El Marqués</option>
+                        <option value="Pedro Escobedo">Pedro Escobedo</option>
+                        <option value="Peñamiller">Peñamiller</option>
+                        <option value="Pinal de Amoles">Pinal de Amoles</option>
+                        <option value="Querétaro">Querétaro</option>
+                        <option value="San Joaquín">San Joaquín</option>
+                        <option value="San Juan del Río">San Juan del Río</option>
+                        <option value="Tequisquiapan">Tequisquiapan</option>
+                        <option value="Tolimán">Tolimán</option>
+                </select>
+            <label>Codigo postal</label>
+            <input>
+            <input type="submit">
+        </form>
+
+
+    </div>
+    
+</body>
+</html>
