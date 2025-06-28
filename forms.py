@@ -14,6 +14,3 @@ class SignupForm(FlaskForm):
 class RegisterForm(FlaskForm):
     Email=StringField('email_r',validators=[DataRequired(),Email()])
     password=PasswordField('password_r',validators=[DataRequired()])
-
-class Registerinformacion(FlaskForm):
-    codigo=StringField('codigo_postal',validators=[DataRequired()])

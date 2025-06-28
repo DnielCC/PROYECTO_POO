@@ -32,3 +32,6 @@ def user_login():
 def info(): 
     return render_template('Vusuario.html')
 
+@app.route('/inicio/usuarios')
+def inicio_usuarios(): 
+    return render_template('inicio_usuarios.html')
