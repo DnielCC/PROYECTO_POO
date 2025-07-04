@@ -1,31 +1,43 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio</title>
+    <title>Workify - Bolsa de Trabajo</title>
     <link rel="stylesheet" href="{{url_for('static',filename='Inicio.css')}}"> 
+    <meta name="description" content="Encuentra tu próximo trabajo o contrata talento con Workify, la plataforma de bolsa de trabajo más moderna">
 </head>
 <body>
-    <div class="div-header">
-        <header >  
+    <!-- Pattern de fondo sutil -->
+    <div class="background-pattern"></div>
+    
+    <header class="div-header">
+        <div class="header-content">
             <div class="logo">
-                <a href="http://127.0.0.1:5000">
-                <img class="header-logo"src="static/images/logo.png" width="100px">
+                <a href="{{ url_for('inicio') }}" aria-label="Ir al inicio">
+                    <img class="header-logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="Workify Logo" width="100">
                 </a> 
             </div>
-                <nav class="hed-nav">
-                    <a href="http://127.0.0.1:5000/Forms">Registrate</a>
-                    <a href="http://127.0.0.1:5000/login">Iniciar Sesión</a>
-                </nav>
-      
-        </header>
-    </div>
-        <div class="container-body">
-                <h1 id="txtdiv-body">Bolsa de trabajo</h1>
-
+            <nav class="hed-nav" role="navigation">
+                <a href="{{ url_for('show_signup') }}" class="btn-primary">Regístrate</a>
+                <a href="{{ url_for('user_login') }}" class="btn-secondary">Iniciar Sesión</a>
+            </nav>
         </div>
-         
+    </header>
+
+    <main class="container-body">
+        <div id="txtdiv-body" class="fade-in">
+            <!-- Icono SVG relacionado con trabajo/conexión -->
+            <div class="hero-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="#3B82F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h1>Workify</h1>
+            <p class="subtitle">Conectamos talento con oportunidades</p>
+        </div>
+    </main>
 </body>
 </html>

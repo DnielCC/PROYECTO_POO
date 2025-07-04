@@ -1,53 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario</title>
+    <title>Registro - Workify</title>
     <link rel="stylesheet" href="{{url_for('static',filename='Forms.css')}}"> 
+    <meta name="description" content="Regístrate en Workify y encuentra tu próximo trabajo">
 </head>
 <body> 
-    <div class="div-contarinerfull" >
-            <nav class="inicio-regreso" >
-                <a href="http://127.0.0.1:5000">
-                    <img  id ="imagen-ini"src="static/images/fecha_inis.png" >  
-                </a>  
-            </nav> 
-        <div class="section-form">
-            <form  class="form" action="" method="post" novalidate>
-               <!-- tag de la clase -->
+    <!-- Pattern de fondo sutil -->
+    <div class="background-pattern"></div>
+    
+    <div class="div-container-full">
+        <nav class="inicio-regreso">
+            <a href="{{ url_for('inicio') }}" aria-label="Volver al inicio">
+                <img id="imagen-ini" src="{{ url_for('static', filename='images/fecha_inis.png') }}" alt="Volver al inicio">  
+            </a>  
+        </nav> 
+        
+        <div class="section-form fade-in">
+            <form class="form" action="" method="post" novalidate>
+                <!-- tag de la clase -->
                 {{ form.hidden_tag() }}
 
-                <!-- Titulo de Inicio de sesion -->
-                <h2 id="txt_form">Registrate</h2>
-                <!-- laber de nombre el imput es del objeto de flaskwtf -->
-                <label class="form" for="nombre" >Nombre</label >
-                    {{ form.name(size=64) }}
-                <!-- manejo de errores de flaskwtf -->
-                {% for error in form.name.errors %}
-                <span style="color: red;">{{ error }}</span>
-                {% endfor %}
+                <!-- Icono de registro -->
+                <div class="form-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#3B82F6" stroke-width="1.5"/>
+                        <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="#3B82F6" stroke-width="1.5"/>
+                    </svg>
+                </div>
+
+                <!-- Titulo de Registro -->
+                <h2 id="txt_form">Regístrate</h2>
                 
-                <label class="form" for="Correo">Correo</label>
-                    {{ form.email }}
+                <!-- Campo Nombre -->
+                <div class="form-group">
+                    <label class="form-label" for="nombre">Nombre</label>
+                    {{ form.name(class="form-input", placeholder="Ingresa tu nombre completo") }}
+                    {% for error in form.name.errors %}
+                    <span class="error-message">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                
+                <!-- Campo Correo -->
+                <div class="form-group">
+                    <label class="form-label" for="Correo">Correo</label>
+                    {{ form.email(class="form-input", placeholder="ejemplo@correo.com") }}
                     {% for error in form.email.errors %}
-                    <span style="color: red;"> {{error}}</span>
-                   {% endfor %} 
-                <label for="Contraseña" class="form">Contraseña</label>
-                    {{ form.password }}
+                    <span class="error-message">{{ error }}</span>
+                    {% endfor %} 
+                </div>
+                
+                <!-- Campo Contraseña -->
+                <div class="form-group">
+                    <label class="form-label" for="Contraseña">Contraseña</label>
+                    {{ form.password(class="form-input", placeholder="Mínimo 8 caracteres") }}
                     {% for error in form.password.errors %}
-                    <span style="color:red";> {{error}} </span>
+                    <span class="error-message">{{ error }}</span>
                     {% endfor %}
+                </div>
 
-                <label for="confirmar" class="form">Confirma contraseña</label>
-                    {{form.confirmpassword}}
+                <!-- Campo Confirmar Contraseña -->
+                <div class="form-group">
+                    <label class="form-label" for="confirmar">Confirma contraseña</label>
+                    {{ form.confirmpassword(class="form-input", placeholder="Repite tu contraseña") }}
                     {% for error in form.confirmpassword.errors %}
-                    <span style="color:red";> {{error}} </span>
+                    <span class="error-message">{{ error }}</span>
                     {% endfor %}
+                </div>
 
-                    <br><br>   
-                <input id="formsubmit" type="submit"  >
+                <input id="formsubmit" type="submit" value="Crear cuenta">
             </form> 
         </div>
     </div>
 </body>
+</html>
