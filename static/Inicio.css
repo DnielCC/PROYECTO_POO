@@ -72,8 +72,11 @@ body {
 /* Navegación moderna */
 .hed-nav {
   display: flex;
+  flex-direction: row;
+  justify-content: end;
   gap: 2rem;
   align-items: center;
+  padding-bottom: 0px;
 }
 
 .hed-nav a {

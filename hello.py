@@ -8,14 +8,14 @@ app.config['SECRET_KEY'] = '7110c8ae51a4b5af97be6534caef90e4bb9bdcb3380af008f90b
 def inicio():
     return render_template('inicio.html')
 
-@app.route('/Forms', methods=["GET", "POST"])
+@app.route('/Registro', methods=["GET", "POST"])
 def show_signup():
     form = SignupForm()
     if form.validate_on_submit():
         # Aquí iría la lógica de registro de usuario en la base de datos
         flash('¡Registro exitoso! (Simulado, sin base de datos)', 'success')
-        return redirect(url_for('user_login'))
-    return render_template("Forms.html", form=form)
+        return redirect(url_for('info'))
+    return render_template("Registro.html", form=form)
 
 @app.route('/login', methods=["GET", "POST"])
 def user_login():
@@ -32,11 +32,11 @@ def logout():
     flash('Has cerrado sesión exitosamente.', 'info')
     return redirect(url_for('inicio'))
 
-@app.route('/login/informacion', methods=['GET', 'POST'])
+@app.route('/Registro/informacion', methods=['GET', 'POST'])
 def info():
     # Aquí iría la lógica para actualizar información del usuario
     flash('Información actualizada exitosamente. (Simulado, sin base de datos)', 'success')
-    return render_template('Vusuario.html')
+    return render_template('Info_users.html')
 
 @app.route('/inicio/usuarios')
 def inicio_usuarios():

@@ -4,7 +4,6 @@ from wtforms.validators import DataRequired, Email, Length, EqualTo
 
 
 class SignupForm(FlaskForm):
-    name = StringField('Nombre', validators=[DataRequired(), Length(max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirmpassword = PasswordField('Confirmar Password', validators=[DataRequired(), EqualTo('password', message='Las contraseñas deben coincidir')])
