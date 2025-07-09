@@ -1,21 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información</title>
-    <link rel="stylesheet", href="{{url_for('static',filename='C_Vusuario.css')}}"> 
+    <title>Información del Usuario</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='C_registro_info.css')}}"> 
 </head>
 <body>
-    <div id="h1-txt"> 
-        <h1>
-            Ingresa la Información para la creación de tu cuenta
-        </h1>
-    </div>
-    <div class="content_informacion">   
-        <form class="content_froms">
-            <label>Ciudad de recidencia</label>
-                <select id="select_ciudades" name="ciudad" style="text-align: center;">
+    <div class="background-pattern"></div>
+    
+    <div class="content_froms">
+        <div id="h1-txt"> 
+            <h1>
+                Información Personal y Profesional
+            </h1>
+        </div>
+        
+        <div class="content_informacion">   
+            <form class="content_froms">
+                <!-- Información Personal -->
+                <div class="form-section">
+                    <h3 style="color: #2E2E2E; margin-bottom: 1rem; text-align: center;">Información Personal</h3>
+                    
+                    <label for="nombre">Nombre(s)</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre" required>
+                    
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text" id="apellidos" name="apellidos" placeholder="Ingresa tus apellidos" required>
+                </div>
+
+                <!-- Información Profesional -->
+                <div class="form-section">
+                    <h3 style="color: #2E2E2E; margin-bottom: 1rem; text-align: center;">Información Profesional</h3>
+                    
+                    <label for="empleos_deseados">Empleos Deseados</label>
+                    <select id="empleos_deseados" name="empleos_deseados" required>
+                        <option value="">Selecciona un empleo deseado</option>
+                        <option value="Becario">Becario</option>
+                        <option value="Auxiliar en Sistemas">Auxiliar en Sistemas</option>
+                        <option value="Desarrollador Junior">Desarrollador Junior</option>
+                        <option value="Técnico en Informática">Técnico en Informática</option>
+                        <option value="Soporte Técnico">Soporte Técnico</option>
+                        <option value="Analista de Datos">Analista de Datos</option>
+                        <option value="Administrador de Sistemas">Administrador de Sistemas</option>
+                        <option value="Programador Web">Programador Web</option>
+                        <option value="Diseñador Web">Diseñador Web</option>
+                        <option value="Consultor IT">Consultor IT</option>
+                    </select>
+                    
+                <label for="experiencia_previa">Experiencia Previa</label>
+                    <select id="experiencia_previa" name="experiencia_previa" required>
+                        <option value="">Selecciona tu experiencia</option>
+                        <option value="Sin experiencia">Sin experiencia</option>
+                        <option value="Menos de 1 año">Menos de 1 año</option>
+                        <option value="1-2 años">1-2 años</option>
+                        <option value="3-5 años">3-5 años</option>
+                        <option value="5-10 años">5-10 años</option>
+                        <option value="Más de 10 años">Más de 10 años</option>
+                    </select>
+                    
+                    <label for="grado_estudio">Grado de Estudio</label> 
+                    <select id="grado_estudio" name="grado_estudio" required>
+                        <option value="">Selecciona tu grado de estudio</option>
+                        <option value="Secundaria">Secundaria</option>
+                        <option value="Preparatoria/Bachillerato">Preparatoria/Bachillerato</option>
+                        <option value="Técnico Superior">Técnico Superior</option>
+                        <option value="Licenciatura en curso">Licenciatura en curso</option>
+                        <option value="Licenciatura terminada">Licenciatura terminada</option>
+                        <option value="Ingeniería en curso">Ingeniería en curso</option>
+                        <option value="Ingeniería terminada">Ingeniería terminada</option>
+                      
+                    </select>
+                </div>
+
+                <!-- Información de Ubicación -->
+                <div class="form-section">
+                    <h3 style="color: #2E2E2E; margin-bottom: 1rem; text-align: center;">Información de Ubicación</h3>
+                    
+                    <label for="select_ciudades">Ciudad de Residencia</label>
+                    <select id="select_ciudades" name="ciudad" required>
+                        <option value="">Selecciona tu ciudad</option>
                         <option value="Amealco de Bonfil">Amealco de Bonfil</option>
                         <option value="Arroyo Seco">Arroyo Seco</option>
                         <option value="Cadereyta de Montes">Cadereyta de Montes</option>
@@ -34,16 +98,15 @@
                         <option value="San Juan del Río">San Juan del Río</option>
                         <option value="Tequisquiapan">Tequisquiapan</option>
                         <option value="Tolimán">Tolimán</option>
-                </select>
-                <br>
-            <label>Codigo postal</label>
-            <input name="codigo_postal" style="text-align: center;">
-            <br>
-            <input type="submit">
-        </form>
-
-
+                    </select>
+                    
+                    <label for="codigo_postal">Código Postal</label>
+                    <input type="text" id="codigo_postal" name="codigo_postal" placeholder="Ingresa tu código postal" required>
+                </div>
+                
+                <input type="submit" id="formsubmit" value="Enviar Información">
+            </form>
+        </div>
     </div>
-    
 </body>
 </html>
