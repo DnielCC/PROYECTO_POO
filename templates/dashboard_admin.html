@@ -211,6 +211,33 @@
         .tab-content.active {
             display: block;
         }
+
+         /* --- ESTILO DE LA TABLA --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        tr:hover {
+            background-color: #f9fafb;
+        }
+
         @media (max-width: 900px) {
             .main { padding: 1.5rem 0.5rem; }
         }
@@ -288,7 +315,34 @@
             <div class="main-title">Panel de Administración</div>
             <div class="tab-content active" id="usuarios">
                 <h2>Usuarios</h2>
-                <p>Aquí se mostrará la lista de usuarios. (Lógica de base de datos pendiente)</p>
+                {% if usuarios %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Correo</th>
+                            <th>Tipo</th>
+                            <th>Nombre</th>
+                            <th>Apellidos</th>
+                            <th>Empleo</th>
+                            <th>Experiencia</th>
+                            <th>Grado</th>
+                            <th>Ciudad</th>
+                            <th>CP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in usuarios %}
+                        <tr>
+                            {% for dato in u %}
+                            <td>{{ dato }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No hay usuarios registrados.</p>
+                {% endif %}
             </div>
             <div class="tab-content" id="empleos">
                 <h2>Empleos</h2>

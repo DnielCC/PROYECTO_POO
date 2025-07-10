@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 from forms import SignupForm, RegisterForm
 from config import ConexionDB
+from werkzeug.security import generate_password_hash, check_password_hash 
 
 conexion = ConexionDB()
 
@@ -11,7 +12,6 @@ app.config['SECRET_KEY'] = '7110c8ae51a4b5af97be6534caef90e4bb9bdcb3380af008f90b
 def inicio():
     return render_template('inicio.html')
 
-
 @app.route('/Registro', methods=["GET", "POST"])
 def show_signup():
     form = SignupForm()
@@ -20,21 +20,21 @@ def show_signup():
         contra = form.password.data
         tipo_usuario = 'aspirante'
 
-        consulta = conexion.get_datos(f"SELECT * FROM login WHERE correo = '{email}'")
-
-        if len(consulta) > 0:
-            return render_template("Registro.html", form=form)
-
-        if form.password.data != form.confirmpassword.data:
-            return render_template("Registro.html", form=form)
+        # Encriptar la contraseña 
+        contra_hasheada = generate_password_hash(contra)
 
         resultado = conexion.insert_datos(
-            f"INSERT INTO login (correo, contra, tipo_usuario) VALUES ('{email}', '{contra}', '{tipo_usuario}')"
+            f"INSERT INTO login (correo, contra, tipo_usuario) VALUES ('{email}', '{contra_hasheada}', '{tipo_usuario}')"
         )
 
         if resultado == 'ok':
-            flash('¡Registro exitoso!', 'success')
-            return redirect(url_for('info'))
+            consulta = conexion.get_datos(f"SELECT id FROM login WHERE correo = '{email}' LIMIT 1")
+            if consulta:
+                session['user_id'] = consulta[0][0]
+                session['user_type'] = tipo_usuario  
+                return redirect(url_for('info'))
+            else:
+                flash('Error al obtener el ID del usuario después del registro.', 'error')
         else:
             flash(f'Error al registrar: {resultado}', 'error')
 
@@ -47,22 +47,32 @@ def user_login():
         correo = form.Email.data
         password = form.password.data
 
-        query = f"SELECT id, tipo_usuario FROM login WHERE correo = '{correo}' AND contra = '{password}'"
+        # Obtener usuario 
+        query = f"SELECT id, contra, tipo_usuario FROM login WHERE correo = '{correo}'"
         resultado = conexion.get_datos(query)
 
         if resultado:
-            session['user_id'] = resultado[0][0]
-            session['user_type'] = resultado[0][1]
-            flash('Inicio de sesión exitoso.', 'success')
+            user_id = resultado[0][0]
+            stored_hash = resultado[0][1]  # Hash guardado en la BD
+            user_type = resultado[0][2]
 
-            if session['user_type'] == 'admin':
-                return redirect(url_for('admin_dashboard'))
+            # Verificar contraseña 
+            if check_password_hash(stored_hash, password):
+                session['user_id'] = user_id
+                session['user_type'] = user_type
+                flash('Inicio de sesión exitoso.', 'success')
+
+                if user_type == 'admin':
+                    return redirect(url_for('admin_dashboard'))
+                else:
+                    return redirect(url_for('inicio_usuarios'))
             else:
-                return redirect(url_for('inicio_usuarios'))
+                form.Email.errors.append('Correo o contraseña incorrectos.')
         else:
-            flash('Correo o contraseña incorrectos.', 'error')
+            form.Email.errors.append('Correo o contraseña incorrectos.')
 
     return render_template('login.html', form=form)
+
 
 @app.route('/logout')
 def logout():
@@ -85,8 +95,11 @@ def info():
         ciudad = request.form.get('ciudad')
         cp = request.form.get('codigo_postal')
 
+        # Obtener el ID del usuario desde la sesión
+        id_usuario = session['user_id']
 
         try:
+
             # Buscar ID de empleo
             id_empleo = conexion.get_datos(
                 f"SELECT id FROM empleos WHERE empleo LIKE BINARY '{empleo}' LIMIT 1")
@@ -126,12 +139,11 @@ def info():
                 id_cp_data = conexion.get_datos(f"SELECT id FROM cp WHERE cp = '{cp}' ORDER BY id DESC LIMIT 1")
             id_cp = id_cp_data[0][0]
 
-            # Insertar información
             insert_info = f"""
             INSERT INTO informacion (
-                nombre, apellidos, id_empleos, id_experiencia, id_grado_estudios, id_ciudad, id_cp
+                id_usuario, nombre, apellidos, id_empleos, id_experiencia, id_grado_estudios, id_ciudad, id_cp
             ) VALUES (
-                '{nombre}', '{apellidos}', {id_empleo}, {id_exp}, {id_grado}, {id_ciudad}, {id_cp}
+                {id_usuario}, '{nombre}', '{apellidos}', {id_empleo}, {id_exp}, {id_grado}, {id_ciudad}, {id_cp}
             )
             """
             resultado = conexion.insert_datos(insert_info)
@@ -146,14 +158,34 @@ def info():
 
     return render_template('Info_users.html')
 
-
 @app.route('/inicio/usuarios')
 def inicio_usuarios():
     return render_template('inicio_usuarios.html')
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
-    return render_template('dashboard_admin.html')
+    query = """
+        SELECT 
+            login.correo,
+            login.tipo_usuario,
+            informacion.nombre,
+            informacion.apellidos,
+            empleos.empleo,
+            experiencia.experiencia,
+            grado_estudios.grado,
+            ciudad_referencia.ciudad,
+            cp.cp
+        FROM informacion
+        INNER JOIN login ON informacion.id_usuario = login.id
+        INNER JOIN empleos ON informacion.id_empleos = empleos.id
+        INNER JOIN experiencia ON informacion.id_experiencia = experiencia.id
+        INNER JOIN grado_estudios ON informacion.id_grado_estudios = grado_estudios.id
+        INNER JOIN ciudad_referencia ON informacion.id_ciudad = ciudad_referencia.id
+        INNER JOIN cp ON informacion.id_cp = cp.id
+    """
+    usuarios = conexion.get_datos(query)
+    return render_template('dashboard_admin.html', usuarios=usuarios)
+
 
 @app.route('/usuario/perfil')
 def perfil_usuario():
@@ -161,6 +193,4 @@ def perfil_usuario():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
+    

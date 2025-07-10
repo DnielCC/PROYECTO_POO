@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Workify</title>
-    <link rel="stylesheet" href="{{url_for('static',filename='Forms.css')}}"> 
+    <link rel="stylesheet" href="{{url_for('static',filename='Forms.css')}}">
     <meta name="description" content="Regístrate en Workify y encuentra tu próximo trabajo">
 </head>
-<body> 
+<body>
     <!-- Pattern de fondo sutil -->
     <div class="background-pattern"></div>
-    
+
     <div class="div-container-full">
         <nav class="inicio-regreso">
             <a href="{{ url_for('inicio') }}" aria-label="Volver al inicio">
-                <img id="imagen-ini" src="{{ url_for('static', filename='images/fecha_inis.png') }}" alt="Volver al inicio">  
-            </a>  
-        </nav> 
-        
+                <img id="imagen-ini" src="{{ url_for('static', filename='images/fecha_inis.png') }}" alt="Volver al inicio">
+            </a>
+        </nav>
+
         <div class="section-form fade-in">
             <form class="form" action="" method="post" novalidate>
                 <!-- tag de la clase -->
@@ -33,17 +33,16 @@
 
                 <!-- Titulo de Registro -->
                 <h2 id="txt_form">Regístrate</h2>
-                
-              
+
                 <!-- Campo Correo -->
                 <div class="form-group">
                     <label class="form-label" for="Correo">Correo</label>
                     {{ form.email(class="form-input", placeholder="ejemplo@correo.com") }}
                     {% for error in form.email.errors %}
                     <span class="error-message">{{ error }}</span>
-                    {% endfor %} 
+                    {% endfor %}
                 </div>
-                
+
                 <!-- Campo Contraseña -->
                 <div class="form-group">
                     <label class="form-label" for="Contraseña">Contraseña</label>
@@ -63,7 +62,7 @@
                 </div>
 
                 <input id="formsubmit" type="submit" value="Crear cuenta">
-            </form> 
+            </form>
         </div>
     </div>
 </body>
