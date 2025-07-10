@@ -11,6 +11,7 @@ app.config['SECRET_KEY'] = '7110c8ae51a4b5af97be6534caef90e4bb9bdcb3380af008f90b
 def inicio():
     return render_template('inicio.html')
 
+
 @app.route('/Registro', methods=["GET", "POST"])
 def show_signup():
     form = SignupForm()
@@ -19,19 +20,21 @@ def show_signup():
         contra = form.password.data
         tipo_usuario = 'aspirante'
 
+        consulta = conexion.get_datos(f"SELECT * FROM login WHERE correo = '{email}'")
+
+        if len(consulta) > 0:
+            return render_template("Registro.html", form=form)
+
+        if form.password.data != form.confirmpassword.data:
+            return render_template("Registro.html", form=form)
 
         resultado = conexion.insert_datos(
             f"INSERT INTO login (correo, contra, tipo_usuario) VALUES ('{email}', '{contra}', '{tipo_usuario}')"
         )
 
         if resultado == 'ok':
-            consulta = conexion.get_datos(f"SELECT id FROM login WHERE correo = '{email}' LIMIT 1")
-            if consulta:
-                session['user_id'] = consulta[0][0]
-                session['user_type'] = tipo_usuario  
-                return redirect(url_for('info'))
-            else:
-                flash('Error al obtener el ID del usuario después del registro.', 'error')
+            flash('¡Registro exitoso!', 'success')
+            return redirect(url_for('info'))
         else:
             flash(f'Error al registrar: {resultado}', 'error')
 
