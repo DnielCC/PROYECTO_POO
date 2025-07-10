@@ -15,20 +15,22 @@
             <div class="profile-content">
                 <div class="profile-section">
                     <h2>Cambiar Contraseña</h2>
-                    <form class="profile-form" id="password-form">
+                    <form class="profile-form" id="password-form" method="POST" action="{{ url_for('perfil_usuario') }}">
+                        {{ form.hidden_tag() }}
+                        
                         <div class="form-group">
-                            <label for="current-password">Contraseña actual</label>
-                            <input type="password" id="current-password" name="current-password" required>
+                            <label for="current_password">Contraseña actual</label>
+                            {{ form.current_password(class="form-control", id="current_password", required=true) }}
                         </div>
                         
                         <div class="form-group">
-                            <label for="new-password">Nueva contraseña</label>
-                            <input type="password" id="new-password" name="new-password" required>
+                            <label for="new_password">Nueva contraseña</label>
+                            {{ form.new_password(class="form-control", id="new_password", required=true) }}
                         </div>
                         
                         <div class="form-group">
-                            <label for="confirm-password">Confirmar nueva contraseña</label>
-                            <input type="password" id="confirm-password" name="confirm-password" required>
+                            <label for="confirm_password">Confirmar nueva contraseña</label>
+                            {{ form.confirm_password(class="form-control", id="confirm_password", required=true) }}
                         </div>
                         
                         <button type="submit" class="btn-change-password">Cambiar contraseña</button>
@@ -42,34 +44,33 @@
         </div>
 
         <script>
-            // Validación de confirmación de contraseña
-            document.getElementById('confirm-password').addEventListener('input', function() {
-                const newPassword = document.getElementById('new-password').value;
-                const confirmPassword = this.value;
+            // Validación de confirmación de contraseña en tiempo real
+            document.getElementById('new_password').addEventListener('input', validatePassword);
+            document.getElementById('confirm_password').addEventListener('input', validatePassword);
+
+            function validatePassword() {
+                const newPassword = document.getElementById('new_password').value;
+                const confirmPassword = document.getElementById('confirm_password').value;
+                const confirmField = document.getElementById('confirm_password');
                 
                 if (newPassword !== confirmPassword && confirmPassword !== '') {
-                    this.setCustomValidity('Las contraseñas no coinciden');
+                    confirmField.setCustomValidity('Las contraseñas no coinciden');
                 } else {
-                    this.setCustomValidity('');
+                    confirmField.setCustomValidity('');
                 }
-            });
+            }
 
             // Manejo del formulario
             document.getElementById('password-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const currentPassword = document.getElementById('current-password').value;
-                const newPassword = document.getElementById('new-password').value;
-                const confirmPassword = document.getElementById('confirm-password').value;
+                // La validación real se hace en el servidor
+                // Este código es solo para UX
+                const newPassword = document.getElementById('new_password').value;
+                const confirmPassword = document.getElementById('confirm_password').value;
                 
                 if (newPassword !== confirmPassword) {
+                    e.preventDefault();
                     alert('Las contraseñas no coinciden');
-                    return;
                 }
-                
-                // Aquí iría la lógica para cambiar contraseña en la base de datos
-                alert('Contraseña cambiada exitosamente');
-                this.reset();
             });
         </script>
     </body>

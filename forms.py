@@ -29,10 +29,3 @@ class RegisterForm(FlaskForm):
 
 class Registerinformacion(FlaskForm):
     codigo=StringField('codigo_postal',validators=[DataRequired()])
-
-
-class ChangePasswordForm(FlaskForm):
-    current_password = PasswordField('Contraseña actual', validators=[DataRequired()])
-    new_password = PasswordField('Nueva contraseña', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirmar nueva contraseña', validators=[DataRequired(), EqualTo('new_password', message='Las contraseñas no coinciden')])
-    submit = SubmitField('Cambiar contraseña')

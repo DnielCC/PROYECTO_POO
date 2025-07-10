@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session
-from forms import SignupForm, RegisterForm
+from forms import SignupForm, RegisterForm, ChangePasswordForm
 from config import ConexionDB
 
 conexion = ConexionDB()
@@ -177,36 +177,6 @@ def admin_dashboard():
     usuarios = conexion.get_datos(query)
     return render_template('dashboard_admin.html', usuarios=usuarios)
 
-
-@app.route('/usuario/perfil')
-def perfil_usuario():
-    if 'user_id' not in session:
-        flash('Debes iniciar sesión para acceder al perfil.', 'error')
-        return redirect(url_for('user_login'))
-
-    form = ChangePasswordForm()
-    if form.validate_on_submit():
-        user_id = session['user_id']
-        current = form.current_password.data
-        new = form.new_password.data
-
-        # Validar contraseña actual directamente sin hash
-        user = conexion.get_datos(
-            f"SELECT id FROM login WHERE id = {user_id} AND contra = '{current}'"
-        )
-
-        if not user:
-            flash('La contraseña actual es incorrecta.', 'error')
-        else:
-            resultado = conexion.update_datos(
-                f"UPDATE login SET contra = '{new}' WHERE id = {user_id}"
-            )
-            if "actualizados" in resultado.lower():
-                flash('Contraseña actualizada correctamente.', 'success')
-            else:
-                flash(f'Error al actualizar: {resultado}', 'error')
-
-    return render_template('perfil.html', form=form)
 
 if __name__ == "__main__":
     app.run(debug=True)
