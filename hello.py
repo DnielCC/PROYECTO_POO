@@ -1,7 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 from forms import SignupForm, RegisterForm
 from config import ConexionDB
-from werkzeug.security import generate_password_hash, check_password_hash 
 
 conexion = ConexionDB()
 
@@ -20,11 +19,9 @@ def show_signup():
         contra = form.password.data
         tipo_usuario = 'aspirante'
 
-        # Encriptar la contraseña 
-        contra_hasheada = generate_password_hash(contra)
 
         resultado = conexion.insert_datos(
-            f"INSERT INTO login (correo, contra, tipo_usuario) VALUES ('{email}', '{contra_hasheada}', '{tipo_usuario}')"
+            f"INSERT INTO login (correo, contra, tipo_usuario) VALUES ('{email}', '{contra}', '{tipo_usuario}')"
         )
 
         if resultado == 'ok':
@@ -47,29 +44,20 @@ def user_login():
         correo = form.Email.data
         password = form.password.data
 
-        # Obtener usuario 
-        query = f"SELECT id, contra, tipo_usuario FROM login WHERE correo = '{correo}'"
+        query = f"SELECT id, tipo_usuario FROM login WHERE correo = '{correo}' AND contra = '{password}'"
         resultado = conexion.get_datos(query)
 
         if resultado:
-            user_id = resultado[0][0]
-            stored_hash = resultado[0][1]  # Hash guardado en la BD
-            user_type = resultado[0][2]
+            session['user_id'] = resultado[0][0]
+            session['user_type'] = resultado[0][1]
+            flash('Inicio de sesión exitoso.', 'success')
 
-            # Verificar contraseña 
-            if check_password_hash(stored_hash, password):
-                session['user_id'] = user_id
-                session['user_type'] = user_type
-                flash('Inicio de sesión exitoso.', 'success')
-
-                if user_type == 'admin':
-                    return redirect(url_for('admin_dashboard'))
-                else:
-                    return redirect(url_for('inicio_usuarios'))
+            if session['user_type'] == 'admin':
+                return redirect(url_for('admin_dashboard'))
             else:
-                form.Email.errors.append('Correo o contraseña incorrectos.')
+                return redirect(url_for('inicio_usuarios'))
         else:
-            form.Email.errors.append('Correo o contraseña incorrectos.')
+            flash('Correo o contraseña incorrectos.', 'error')
 
     return render_template('login.html', form=form)
 
