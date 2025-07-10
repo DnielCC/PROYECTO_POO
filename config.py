@@ -8,7 +8,7 @@ class ConexionDB():
             self.connection = mysql.connector.connect(
                 host='localhost',
                 user='root',
-                password='', #Agregar password 
+                password='123456789', #Agregar password 
                 database='bolsa_trabajo_1')
             self.cursor = self.connection.cursor()
             self.errMss = ''

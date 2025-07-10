@@ -155,6 +155,10 @@ def inicio_usuarios():
 def admin_dashboard():
     return render_template('dashboard_admin.html')
 
+@app.route('/usuario/perfil')
+def perfil_usuario():
+    return render_template('perfil.html')
+
 if __name__ == "__main__":
     app.run(debug=True)
 

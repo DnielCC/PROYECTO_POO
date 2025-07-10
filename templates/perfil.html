@@ -1,0 +1,76 @@
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='Perfil.css')}}"> 
+    </head>
+    <body>
+        <div class="container">
+            <div class="profile-header">
+                <h1>Mi Perfil</h1>
+                <p>Gestiona tu información personal</p>
+            </div>
+
+            <div class="profile-content">
+                <div class="profile-section">
+                    <h2>Cambiar Contraseña</h2>
+                    <form class="profile-form" id="password-form">
+                        <div class="form-group">
+                            <label for="current-password">Contraseña actual</label>
+                            <input type="password" id="current-password" name="current-password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="new-password">Nueva contraseña</label>
+                            <input type="password" id="new-password" name="new-password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirm-password">Confirmar nueva contraseña</label>
+                            <input type="password" id="confirm-password" name="confirm-password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn-change-password">Cambiar contraseña</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn-secondary" onclick="window.history.back()">Volver</button>
+            </div>
+        </div>
+
+        <script>
+            // Validación de confirmación de contraseña
+            document.getElementById('confirm-password').addEventListener('input', function() {
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = this.value;
+                
+                if (newPassword !== confirmPassword && confirmPassword !== '') {
+                    this.setCustomValidity('Las contraseñas no coinciden');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+
+            // Manejo del formulario
+            document.getElementById('password-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                
+                if (newPassword !== confirmPassword) {
+                    alert('Las contraseñas no coinciden');
+                    return;
+                }
+                
+                // Aquí iría la lógica para cambiar contraseña en la base de datos
+                alert('Contraseña cambiada exitosamente');
+                this.reset();
+            });
+        </script>
+    </body>
+</html>
