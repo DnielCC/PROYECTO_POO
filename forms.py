@@ -32,6 +32,7 @@ class Registerinformacion(FlaskForm):
 
 
 class ChangePasswordForm(FlaskForm):
-    new_password = PasswordField('Nueva Contraseña', validators=[DataRequired(), Length(min=6)])
-    confirm_password = PasswordField('Confirmar Contraseña', validators=[DataRequired(), EqualTo('new_password', message='Las contraseñas deben coincidir')])
-    submit = SubmitField('Actualizar Contraseña')
+    current_password = PasswordField('Contraseña actual', validators=[DataRequired()])
+    new_password = PasswordField('Nueva contraseña', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirmar nueva contraseña', validators=[DataRequired(), EqualTo('new_password', message='Las contraseñas no coinciden')])
+    submit = SubmitField('Cambiar contraseña')

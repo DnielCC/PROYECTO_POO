@@ -178,31 +178,35 @@ def admin_dashboard():
     return render_template('dashboard_admin.html', usuarios=usuarios)
 
 
-from forms import ChangePasswordForm  # asegúrate de importarlo
-import hashlib
-
-@app.route('/inicio/perfil', methods=['GET', 'POST'])
+@app.route('/usuario/perfil')
 def perfil_usuario():
     if 'user_id' not in session:
-        flash('Debes iniciar sesión para acceder a tu perfil.', 'error')
+        flash('Debes iniciar sesión para acceder al perfil.', 'error')
         return redirect(url_for('user_login'))
 
     form = ChangePasswordForm()
     if form.validate_on_submit():
-        nueva_contra = form.new_password.data
-        hashed_nueva_contra = hashlib.sha256(nueva_contra.encode()).hexdigest()
+        user_id = session['user_id']
+        current = form.current_password.data
+        new = form.new_password.data
 
-        resultado = conexion.update_datos(
-            f"UPDATE login SET contra = '{hashed_nueva_contra}' WHERE id = {session['user_id']}"
+        # Validar contraseña actual directamente sin hash
+        user = conexion.get_datos(
+            f"SELECT id FROM login WHERE id = {user_id} AND contra = '{current}'"
         )
 
-        if "actualizados" in resultado.lower():
-            flash('Contraseña actualizada exitosamente.', 'success')
+        if not user:
+            flash('La contraseña actual es incorrecta.', 'error')
         else:
-            flash(f'Error al actualizar: {resultado}', 'error')
+            resultado = conexion.update_datos(
+                f"UPDATE login SET contra = '{new}' WHERE id = {user_id}"
+            )
+            if "actualizados" in resultado.lower():
+                flash('Contraseña actualizada correctamente.', 'success')
+            else:
+                flash(f'Error al actualizar: {resultado}', 'error')
 
     return render_template('perfil.html', form=form)
-
 
 if __name__ == "__main__":
     app.run(debug=True)
