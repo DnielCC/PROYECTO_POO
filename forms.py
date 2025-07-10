@@ -3,6 +3,7 @@ from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
 from wtforms import ValidationError 
 from config import ConexionDB
+from wtforms import PasswordField
 conexion = ConexionDB() 
 
 class SignupForm(FlaskForm):
@@ -28,3 +29,9 @@ class RegisterForm(FlaskForm):
 
 class Registerinformacion(FlaskForm):
     codigo=StringField('codigo_postal',validators=[DataRequired()])
+
+
+class ChangePasswordForm(FlaskForm):
+    new_password = PasswordField('Nueva Contraseña', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirmar Contraseña', validators=[DataRequired(), EqualTo('new_password', message='Las contraseñas deben coincidir')])
+    submit = SubmitField('Actualizar Contraseña')
