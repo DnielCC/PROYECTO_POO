@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session
-from forms import SignupForm, RegisterForm, ChangePasswordForm
+from forms import SignupForm, RegisterForm
 from config import ConexionDB
 
 conexion = ConexionDB()
