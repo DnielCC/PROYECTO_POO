@@ -177,6 +177,10 @@ def admin_dashboard():
     usuarios = conexion.get_datos(query)
     return render_template('dashboard_admin.html', usuarios=usuarios)
 
+@app.route('/user/perfil')
+def perfil():
+   return render_template('user_perfil.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True)
