@@ -1,30 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workify - Bolsa de Trabajo</title>
-    <link rel="stylesheet" href="{{url_for('static',filename='Inicio.css')}}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="div-header">
-        <header >  
-            <div class="logo">
-                <a href="http://127.0.0.1:5000">
-                <img class="header-logo"src="static/images/logo.png" width="100px">
-                </a> 
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <!-- Burbujas animadas -->
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/logow.png') }}?v={{ range(1, 1000) | random }}" alt="Workify Logo" class="logo">
+                
             </div>
-                <nav class="hed-nav">
-                    <a href="http://127.0.0.1:5000/Registro">Registrate</a>
-                    <a href="http://127.0.0.1:5000/login">Iniciar Sesión</a>
-                </nav>
-      
-        </header>
-    </div>
-        <div class="container-body">
-                <h1 id="txtdiv-body">Workify</h1>
-
         </div>
-         
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="auth-card">
+                <!-- Tabs -->
+                <div class="tabs">
+                    <div class="tab active" id="login-tab">Iniciar Sesión</div>
+                    <div class="tab" id="signup-tab">Registrarse</div>
+                </div>
+
+                <!-- Forms Container -->
+                <div class="forms-container">
+                    <!-- Login Form -->
+                    <form class="form" id="login-form" method="POST" action="{{ url_for('user_login') }}">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" name="Email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Contraseña</label>
+                            <input type="password" id="login-password" name="password" required>
+                        </div>
+                        <div class="forgot-password">
+                            <a href="#" onclick="alert('Función en desarrollo')">¿Olvidaste tu contraseña?</a>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                        <div class="switch-form">
+                            <p>¿No tienes cuenta? <a href="#" id="switch-to-signup">Regístrate</a></p>
+                        </div>
+                    </form>
+
+                    <!-- Signup Form -->
+                    <form class="form hidden" id="signup-form" method="POST" action="{{ url_for('show_signup') }}">
+                        <div class="form-group">
+                            <label for="signup-name">Nombre</label>
+                            <input type="text" id="signup-name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <input type="email" id="signup-email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Contraseña</label>
+                            <input type="password" id="signup-password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-confirm-password">Confirmar Contraseña</label>
+                            <input type="password" id="signup-confirm-password" name="confirmpassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Registrarse</button>
+                        <div class="switch-form">
+                            <p>¿Ya tienes cuenta? <a href="#" id="switch-to-login">Inicia Sesión</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='bubbles.js') }}"></script>
 </body>
 </html>

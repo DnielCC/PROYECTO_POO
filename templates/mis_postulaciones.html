@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Postulaciones - Workify</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='Inicio_usuarios.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='Postulaciones.css')}}">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    {% include 'components/navbar_usuarios.html' %}
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+        <!-- Header de la página -->
+        <div class="page-header">
+            <h1 class="page-title">Mis Postulaciones</h1>
+            <p class="page-subtitle">Revisa el estado de todas tus aplicaciones laborales</p>
+        </div>
+
+        <!-- Estadísticas rápidas -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-number">8</span>
+                    <span class="stat-label">En revisión</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon accepted">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Aceptadas</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon rejected">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-number">2</span>
+                    <span class="stat-label">Rechazadas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de postulaciones -->
+        <div class="applications-container">
+            <!-- Postulación 1 -->
+            <div class="application-card">
+                <div class="application-header">
+                    <div class="job-info">
+                        <h3 class="job-title">Desarrollador Frontend</h3>
+                        <div class="company-info">
+                            <i class="fas fa-building"></i>
+                            <span>TechCorp Solutions</span>
+                        </div>
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Querétaro, México</span>
+                        </div>
+                    </div>
+                    <div class="status-badge reviewing">
+                        <i class="fas fa-clock"></i>
+                        <span>En revisión</span>
+                    </div>
+                </div>
+                <div class="application-details">
+                    <div class="application-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Aplicado el 15 de Noviembre, 2024</span>
+                    </div>
+                    <div class="application-actions">
+                        <button class="btn-view">
+                            <i class="fas fa-eye"></i>
+                            Ver detalles
+                        </button>
+                        <button class="btn-withdraw">
+                            <i class="fas fa-times"></i>
+                            Retirar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Postulación 2 -->
+            <div class="application-card">
+                <div class="application-header">
+                    <div class="job-info">
+                        <h3 class="job-title">Diseñador UX/UI</h3>
+                        <div class="company-info">
+                            <i class="fas fa-building"></i>
+                            <span>Creative Studio</span>
+                        </div>
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Remoto</span>
+                        </div>
+                    </div>
+                    <div class="status-badge accepted">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Aceptado</span>
+                    </div>
+                </div>
+                <div class="application-details">
+                    <div class="application-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Aplicado el 10 de Noviembre, 2024</span>
+                    </div>
+                    <div class="application-actions">
+                        <button class="btn-view">
+                            <i class="fas fa-eye"></i>
+                            Ver detalles
+                        </button>
+                        <button class="btn-contact">
+                            <i class="fas fa-envelope"></i>
+                            Contactar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Postulación 3 -->
+            <div class="application-card">
+                <div class="application-header">
+                    <div class="job-info">
+                        <h3 class="job-title">Analista de Datos</h3>
+                        <div class="company-info">
+                            <i class="fas fa-building"></i>
+                            <span>Data Insights</span>
+                        </div>
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Monterrey, México</span>
+                        </div>
+                    </div>
+                    <div class="status-badge rejected">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Rechazado</span>
+                    </div>
+                </div>
+                <div class="application-details">
+                    <div class="application-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Aplicado el 5 de Noviembre, 2024</span>
+                    </div>
+                    <div class="application-actions">
+                        <button class="btn-view">
+                            <i class="fas fa-eye"></i>
+                            Ver detalles
+                        </button>
+                        <button class="btn-feedback">
+                            <i class="fas fa-comment"></i>
+                            Solicitar feedback
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Postulación 4 -->
+            <div class="application-card">
+                <div class="application-header">
+                    <div class="job-info">
+                        <h3 class="job-title">Project Manager</h3>
+                        <div class="company-info">
+                            <i class="fas fa-building"></i>
+                            <span>Innovation Labs</span>
+                        </div>
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>CDMX, México</span>
+                        </div>
+                    </div>
+                    <div class="status-badge reviewing">
+                        <i class="fas fa-clock"></i>
+                        <span>En revisión</span>
+                    </div>
+                </div>
+                <div class="application-details">
+                    <div class="application-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Aplicado el 12 de Noviembre, 2024</span>
+                    </div>
+                    <div class="application-actions">
+                        <button class="btn-view">
+                            <i class="fas fa-eye"></i>
+                            Ver detalles
+                        </button>
+                        <button class="btn-withdraw">
+                            <i class="fas fa-times"></i>
+                            Retirar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Postulación 5 -->
+            <div class="application-card">
+                <div class="application-header">
+                    <div class="job-info">
+                        <h3 class="job-title">DevOps Engineer</h3>
+                        <div class="company-info">
+                            <i class="fas fa-building"></i>
+                            <span>Cloud Systems</span>
+                        </div>
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Remoto</span>
+                        </div>
+                    </div>
+                    <div class="status-badge accepted">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Aceptado</span>
+                    </div>
+                </div>
+                <div class="application-details">
+                    <div class="application-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Aplicado el 8 de Noviembre, 2024</span>
+                    </div>
+                    <div class="application-actions">
+                        <button class="btn-view">
+                            <i class="fas fa-eye"></i>
+                            Ver detalles
+                        </button>
+                        <button class="btn-contact">
+                            <i class="fas fa-envelope"></i>
+                            Contactar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Postulación 6 -->
+            <div class="application-card">
+                <div class="application-header">
+                    <div class="job-info">
+                        <h3 class="job-title">Desarrollador Backend</h3>
+                        <div class="company-info">
+                            <i class="fas fa-building"></i>
+                            <span>WebTech Solutions</span>
+                        </div>
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Guadalajara, México</span>
+                        </div>
+                    </div>
+                    <div class="status-badge reviewing">
+                        <i class="fas fa-clock"></i>
+                        <span>En revisión</span>
+                    </div>
+                </div>
+                <div class="application-details">
+                    <div class="application-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Aplicado el 14 de Noviembre, 2024</span>
+                    </div>
+                    <div class="application-actions">
+                        <button class="btn-view">
+                            <i class="fas fa-eye"></i>
+                            Ver detalles
+                        </button>
+                        <button class="btn-withdraw">
+                            <i class="fas fa-times"></i>
+                            Retirar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Script para la navbar -->
+    <script src="{{ url_for('static', filename='navbar.js') }}"></script>
+</body>
+</html> 

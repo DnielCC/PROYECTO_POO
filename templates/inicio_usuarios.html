@@ -5,20 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Empleo - Buscar Trabajo</title>
-     <link rel="stylesheet" href="{{url_for('static',filename='Inicio_usuarios.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='Inicio_usuarios.css')}}">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="http://127.0.0.1:5000" class="logo">Workify</a>
-            <ul class="nav-menu">
-                <li><a href="http://127.0.0.1:5000">Inicio</a></li> 
-                <li><a href="http://127.0.0.1:5000/user/perfil">Perfil</a></li>
-                <li><a href="#">Postulaciónes</a></li>
-               
-            </ul>
-        </div>
-    </nav>
+    {% include 'components/navbar_usuarios.html' %}
 
     <!-- Contenido principal -->
     <div class="main-content">
@@ -28,8 +20,174 @@
             <p>Explora miles de oportunidades laborales y encuentra la posición perfecta para tu carrera profesional.</p>
         </section>
 
+        <!-- Sección de vacantes -->
+        <section class="jobs-section">
+            <div class="section-header">
+                <h2>Vacantes disponibles</h2>
+                <p>Descubre las mejores oportunidades laborales en tu área</p>
+            </div>
 
+            <div class="jobs-grid">
+                <!-- Tarjeta de empleo 1 -->
+                <div class="job-card">
+                    <div class="job-header">
+                        <h3 class="job-title">Desarrollador Backend</h3>
+                        <span class="job-type">Tiempo completo</span>
+                    </div>
+                    <div class="job-company">
+                        <i class="fas fa-building"></i>
+                        <span>TechCorp Solutions</span>
+                    </div>
+                    <div class="job-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Querétaro, México</span>
+                    </div>
+                    <p class="job-description">
+                        Buscamos un desarrollador backend con experiencia en Python, Django y bases de datos. 
+                        Responsable de desarrollar APIs robustas y escalables.
+                    </p>
+                    <div class="job-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Django</span>
+                        <span class="tag">PostgreSQL</span>
+                    </div>
+                    <button class="btn-apply">Aplicar ahora</button>
+                </div>
 
+                <!-- Tarjeta de empleo 2 -->
+                <div class="job-card">
+                    <div class="job-header">
+                        <h3 class="job-title">Diseñador UX/UI</h3>
+                        <span class="job-type">Remoto</span>
+                    </div>
+                    <div class="job-company">
+                        <i class="fas fa-building"></i>
+                        <span>Creative Studio</span>
+                    </div>
+                    <div class="job-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Remoto</span>
+                    </div>
+                    <p class="job-description">
+                        Diseñador creativo para crear experiencias de usuario excepcionales. 
+                        Experiencia con Figma, Adobe Creative Suite y metodologías ágiles.
+                    </p>
+                    <div class="job-tags">
+                        <span class="tag">Figma</span>
+                        <span class="tag">Adobe</span>
+                        <span class="tag">UX/UI</span>
+                    </div>
+                    <button class="btn-apply">Aplicar ahora</button>
+                </div>
 
+                <!-- Tarjeta de empleo 3 -->
+                <div class="job-card">
+                    <div class="job-header">
+                        <h3 class="job-title">Analista de Datos</h3>
+                        <span class="job-type">Tiempo completo</span>
+                    </div>
+                    <div class="job-company">
+                        <i class="fas fa-building"></i>
+                        <span>Data Insights</span>
+                    </div>
+                    <div class="job-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Monterrey, México</span>
+                    </div>
+                    <p class="job-description">
+                        Analista experto en SQL, Python y herramientas de visualización. 
+                        Responsable de generar insights valiosos para la toma de decisiones.
+                    </p>
+                    <div class="job-tags">
+                        <span class="tag">SQL</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">Tableau</span>
+                    </div>
+                    <button class="btn-apply">Aplicar ahora</button>
+                </div>
+
+                <!-- Tarjeta de empleo 4 -->
+                <div class="job-card">
+                    <div class="job-header">
+                        <h3 class="job-title">Desarrollador Frontend</h3>
+                        <span class="job-type">Tiempo completo</span>
+                    </div>
+                    <div class="job-company">
+                        <i class="fas fa-building"></i>
+                        <span>WebTech Solutions</span>
+                    </div>
+                    <div class="job-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Guadalajara, México</span>
+                    </div>
+                    <p class="job-description">
+                        Desarrollador frontend con experiencia en React, TypeScript y CSS moderno. 
+                        Crear interfaces web responsivas y optimizadas.
+                    </p>
+                    <div class="job-tags">
+                        <span class="tag">React</span>
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">CSS</span>
+                    </div>
+                    <button class="btn-apply">Aplicar ahora</button>
+                </div>
+
+                <!-- Tarjeta de empleo 5 -->
+                <div class="job-card">
+                    <div class="job-header">
+                        <h3 class="job-title">Project Manager</h3>
+                        <span class="job-type">Híbrido</span>
+                    </div>
+                    <div class="job-company">
+                        <i class="fas fa-building"></i>
+                        <span>Innovation Labs</span>
+                    </div>
+                    <div class="job-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>CDMX, México</span>
+                    </div>
+                    <p class="job-description">
+                        Project Manager con experiencia en metodologías ágiles y gestión de equipos. 
+                        Liderar proyectos tecnológicos de alto impacto.
+                    </p>
+                    <div class="job-tags">
+                        <span class="tag">Scrum</span>
+                        <span class="tag">Agile</span>
+                        <span class="tag">Jira</span>
+                    </div>
+                    <button class="btn-apply">Aplicar ahora</button>
+                </div>
+
+                <!-- Tarjeta de empleo 6 -->
+                <div class="job-card">
+                    <div class="job-header">
+                        <h3 class="job-title">DevOps Engineer</h3>
+                        <span class="job-type">Remoto</span>
+                    </div>
+                    <div class="job-company">
+                        <i class="fas fa-building"></i>
+                        <span>Cloud Systems</span>
+                    </div>
+                    <div class="job-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Remoto</span>
+                    </div>
+                    <p class="job-description">
+                        Ingeniero DevOps experto en AWS, Docker y Kubernetes. 
+                        Automatizar procesos de CI/CD y optimizar infraestructura cloud.
+                    </p>
+                    <div class="job-tags">
+                        <span class="tag">AWS</span>
+                        <span class="tag">Docker</span>
+                        <span class="tag">Kubernetes</span>
+                    </div>
+                    <button class="btn-apply">Aplicar ahora</button>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Script para la navbar -->
+    <script src="{{ url_for('static', filename='navbar.js') }}"></script>
 </body>
 </html>

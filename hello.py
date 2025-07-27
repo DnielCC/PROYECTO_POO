@@ -181,6 +181,14 @@ def admin_dashboard():
 def perfil():
    return render_template('user_perfil.html')
 
+@app.route('/user/postulaciones')
+def mis_postulaciones():
+    if 'user_id' not in session:
+        flash('Debes iniciar sesión para continuar.', 'error')
+        return redirect(url_for('user_login'))
+    
+    return render_template('mis_postulaciones.html')
+
 
 if __name__ == "__main__":
     app.run(debug=True)

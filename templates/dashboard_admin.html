@@ -273,44 +273,7 @@
         </svg>
     </button>
     <div class="dashboard">
-        <nav class="sidebar" id="sidebar">
-            <div>
-                <div class="sidebar-header">
-                    <span>Workify Admin</span>
-                   
-                </div>
-                <div class="sidebar-nav">
-                    <button class="sidebar-link active" data-tab="usuarios">
-                        <!-- Heroicon: Users -->
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 16.5a7.488 7.488 0 00-5.982 2.225M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm6 2.25a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-2.25 6.75a6.72 6.72 0 012.25-.375c.414 0 .816.03 1.204.087M6.75 12.75a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-2.25 6.75a6.72 6.72 0 00-2.25-.375c-.414 0-.816.03-1.204.087" /></svg>
-                        <span>Usuarios</span>
-                    </button>
-                    <button class="sidebar-link" data-tab="empleos">
-                        <!-- Heroicon: Briefcase -->
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5V6A2.25 2.25 0 019 3.75h6A2.25 2.25 0 0117.25 6v1.5M3.75 7.5h16.5A2.25 2.25 0 0122.5 9.75v7.5A2.25 2.25 0 0120.25 19.5H3.75A2.25 2.25 0 011.5 17.25v-7.5A2.25 2.25 0 013.75 7.5zm0 0V6A2.25 2.25 0 016 3.75h12A2.25 2.25 0 0120.25 6v1.5" /></svg>
-                        <span>Empleos</span>
-                    </button>
-                    <button class="sidebar-link" data-tab="reportes">
-                        <!-- Heroicon: Chart Bar -->
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M9 17V9m4 8V5m4 12v-6" /></svg>
-                        <span>Reportes</span>
-                    </button>
-                    <button class="collapse-btn" onclick="collapseSidebar()" aria-label="Contraer sidebar">
-                        <!-- Heroicon: Chevron Left -->
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-                    </button>
-                </div>
-            </div>
-            <div class="sidebar-footer">
-                <div class="user-avatar">A</div>
-                <span>Admin</span>
-                <a href="http://127.0.0.1:5000">
-                <button class="logout-btn" title="Cerrar sesión">
-                    <!-- Heroicon: Arrow Left On Rectangle -->
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 12h-9m0 0l3-3m-3 3l3 3" /></svg>
-                </button></a>
-            </div>
-        </nav>
+        {% include 'components/sidebar_admin.html' %}
         <main class="main">
             <div class="main-title">Panel de Administración</div>
             <div class="tab-content active" id="usuarios">

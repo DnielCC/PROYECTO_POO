@@ -1,27 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Mi Perfil</title>
+    <title>Mi Perfil - Workify</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet'href='/static/Perfil.css'>
+    <link rel='stylesheet'href='/static/Inicio_usuarios.css'>
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>  
-    <h1 id="h1">Mi Perfil</h1>
-    <nav class="navbar">
-        <ul>
-            <li><a href="http://127.0.0.1:5000/inicio/usuarios">Inicio</a></li>
-            <li><a href="/vacantes">Postulaciones</a></li>
-        </ul>
-    </nav>
+    {% include 'components/navbar_usuarios.html' %}
 
-    <div class="cont-info">
-        <img src="/static/images/logo.png" alt="Avatar" class="avatar">
-        <h2>Nombre del Usuario</h2>
-        <p class="email">usuario@email.com</p>
-        <p class="info-extra">Otra información relevante</p>
-        <a href="#" class="btn-accent">Cambiar contraseña</a>
+    <div class="main-content">
+        <div class="profile-header">
+            <h1 class="profile-title">Mi Perfil</h1>
+        </div>
+        
+        <div class="profile-card">
+            
+            
+            <div class="profile-info">
+                <h2 class="user-name">Juan Carlos Pérez</h2>
+                <p class="user-email">
+                    <i class="fas fa-envelope"></i>
+                    juan.perez@email.com
+                </p>
+                <p class="user-phone">
+                    <i class="fas fa-phone"></i>
+                    +52 55 1234 5678
+                </p>
+                <p class="user-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Querétaro, México
+                </p>
+                <p class="user-position">
+                    <i class="fas fa-briefcase"></i>
+                    Desarrollador Web
+                </p>
+            </div>
+            
+            <div class="profile-actions">
+                <button class="btn-change-password">
+                    <i class="fas fa-edit"></i>
+                    Editar perfil
+                </button>
+                
+            </div>
+        </div>
     </div>
+    
+    <!-- Script para la navbar -->
+    <script src="{{ url_for('static', filename='navbar.js') }}"></script>
 </body>
 </html>

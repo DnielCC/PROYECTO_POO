@@ -1,0 +1,342 @@
+/* Estilos específicos para la página de postulaciones */
+
+/* Header de la página */
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2E2E2E;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+    font-size: 1.1rem;
+    color: #6B7280;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Contenedor de estadísticas */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: white;
+    font-size: 1.2rem;
+}
+
+.stat-icon.accepted {
+    background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.stat-icon.rejected {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2E2E2E;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6B7280;
+    margin-top: 0.25rem;
+}
+
+/* Contenedor de aplicaciones */
+.applications-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Tarjeta de aplicación */
+.application-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E5E7EB;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.application-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3B82F6, #1E40AF);
+}
+
+.application-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    border-color: #3B82F6;
+}
+
+/* Header de la aplicación */
+.application-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.job-info {
+    flex: 1;
+}
+
+.job-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2E2E2E;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.3;
+}
+
+.company-info, .location-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #6B7280;
+    font-size: 0.95rem;
+}
+
+.company-info i, .location-info i {
+    color: #3B82F6;
+    width: 16px;
+}
+
+/* Badges de estado */
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.status-badge.reviewing {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: white;
+}
+
+.status-badge.accepted {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+}
+
+.status-badge.rejected {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: white;
+}
+
+.status-badge i {
+    font-size: 0.8rem;
+}
+
+/* Detalles de la aplicación */
+.application-details {
+    border-top: 1px solid #E5E7EB;
+    padding-top: 1rem;
+}
+
+.application-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.application-date i {
+    color: #3B82F6;
+    width: 16px;
+}
+
+/* Acciones de la aplicación */
+.application-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-view, .btn-withdraw, .btn-contact, .btn-feedback {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-view {
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    color: white;
+}
+
+.btn-view:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-withdraw {
+    background: #F3F4F6;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
+}
+
+.btn-withdraw:hover {
+    background: #EF4444;
+    color: white;
+    border-color: #EF4444;
+}
+
+.btn-contact {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+}
+
+.btn-contact:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-feedback {
+    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    color: white;
+}
+
+.btn-feedback:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .stats-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .applications-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .application-card {
+        padding: 1.25rem;
+    }
+
+    .application-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .status-badge {
+        align-self: flex-start;
+    }
+
+    .application-actions {
+        flex-direction: column;
+    }
+
+    .btn-view, .btn-withdraw, .btn-contact, .btn-feedback {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.8rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .job-title {
+        font-size: 1.2rem;
+    }
+
+    .application-card {
+        padding: 1rem;
+    }
+} 
