@@ -1,0 +1,276 @@
+{% extends "reclutador/base.html" %}
+
+{% block title %}Vacantes Publicadas - Reclutador{% endblock %}
+
+{% block page_title %}Vacantes Publicadas{% endblock %}
+
+{% block content %}
+<!-- Header Actions -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 1.5rem; font-weight: 600; color: #1F2937; margin-bottom: 0.5rem;">Gestionar Vacantes</h2>
+        <p style="color: #6B7280; margin: 0;">Administra todas las vacantes publicadas</p>
+    </div>
+    <a href="{{ url_for('reclutador_crear_vacante') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        Nueva Vacante
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-body">
+        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <label class="form-label">Buscar</label>
+                <input type="text" class="form-input" placeholder="Buscar por título o empresa...">
+            </div>
+            <div style="min-width: 150px;">
+                <label class="form-label">Estado</label>
+                <select class="form-select">
+                    <option value="">Todos</option>
+                    <option value="active">Activas</option>
+                    <option value="closed">Cerradas</option>
+                    <option value="draft">Borrador</option>
+                </select>
+            </div>
+            <div style="min-width: 150px;">
+                <label class="form-label">Tipo</label>
+                <select class="form-select">
+                    <option value="">Todos</option>
+                    <option value="full-time">Tiempo Completo</option>
+                    <option value="part-time">Medio Tiempo</option>
+                    <option value="remote">Remoto</option>
+                    <option value="hybrid">Híbrido</option>
+                </select>
+            </div>
+            <div style="display: flex; align-items: end;">
+                <button class="btn btn-secondary" style="height: 42px;">
+                    <i class="fas fa-filter"></i>
+                    Filtrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vacancies Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Lista de Vacantes</h3>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-secondary btn-sm" data-tooltip="Exportar">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="btn btn-secondary btn-sm" data-tooltip="Vista de Grilla">
+                <i class="fas fa-th-large"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Empresa</th>
+                    <th>Ubicación</th>
+                    <th>Fecha Publicada</th>
+                    <th>Postulaciones</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">Desarrollador Frontend Senior</div>
+                            <div style="font-size: 0.75rem; color: #6B7280;">Tiempo Completo • Remoto</div>
+                        </div>
+                    </td>
+                    <td>TechCorp Solutions</td>
+                    <td>Querétaro, México</td>
+                    <td>15 Nov 2024</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-weight: 600; color: #1F2937;">24</span>
+                            <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-success">Activa</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-sm" data-tooltip="Ver Detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm" data-tooltip="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-tooltip="Eliminar" onclick="confirmAction('¿Estás seguro de eliminar esta vacante?', 'deleteVacancy')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">Analista de Datos</div>
+                            <div style="font-size: 0.75rem; color: #6B7280;">Tiempo Completo • Presencial</div>
+                        </div>
+                    </td>
+                    <td>DataInsights Inc</td>
+                    <td>México D.F.</td>
+                    <td>12 Nov 2024</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-weight: 600; color: #1F2937;">18</span>
+                            <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-success">Activa</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-sm" data-tooltip="Ver Detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm" data-tooltip="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-tooltip="Eliminar" onclick="confirmAction('¿Estás seguro de eliminar esta vacante?', 'deleteVacancy')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">Desarrollador Backend</div>
+                            <div style="font-size: 0.75rem; color: #6B7280;">Tiempo Completo • Híbrido</div>
+                        </div>
+                    </td>
+                    <td>InnovateSoft</td>
+                    <td>Guadalajara, México</td>
+                    <td>10 Nov 2024</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-weight: 600; color: #1F2937;">31</span>
+                            <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-warning">Cerrada</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-sm" data-tooltip="Ver Detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm" data-tooltip="Reabrir">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-tooltip="Eliminar" onclick="confirmAction('¿Estás seguro de eliminar esta vacante?', 'deleteVacancy')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">UX/UI Designer</div>
+                            <div style="font-size: 0.75rem; color: #6B7280;">Medio Tiempo • Remoto</div>
+                        </div>
+                    </td>
+                    <td>CreativeStudio</td>
+                    <td>Monterrey, México</td>
+                    <td>8 Nov 2024</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-weight: 600; color: #1F2937;">12</span>
+                            <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-success">Activa</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-sm" data-tooltip="Ver Detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm" data-tooltip="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-tooltip="Eliminar" onclick="confirmAction('¿Estás seguro de eliminar esta vacante?', 'deleteVacancy')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">DevOps Engineer</div>
+                            <div style="font-size: 0.75rem; color: #6B7280;">Tiempo Completo • Híbrido</div>
+                        </div>
+                    </td>
+                    <td>CloudTech Solutions</td>
+                    <td>Puebla, México</td>
+                    <td>5 Nov 2024</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-weight: 600; color: #1F2937;">8</span>
+                            <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-info">Borrador</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-sm" data-tooltip="Ver Detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm" data-tooltip="Publicar">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-tooltip="Eliminar" onclick="confirmAction('¿Estás seguro de eliminar esta vacante?', 'deleteVacancy')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="card-footer">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="color: #6B7280; font-size: 0.875rem;">
+                Mostrando 1-5 de 12 vacantes
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-secondary btn-sm">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-primary btn-sm">1</button>
+                <button class="btn btn-secondary btn-sm">2</button>
+                <button class="btn btn-secondary btn-sm">3</button>
+                <button class="btn btn-secondary btn-sm">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteVacancy() {
+    showNotification('Vacante eliminada exitosamente', 'success');
+}
+</script>
+{% endblock %} 

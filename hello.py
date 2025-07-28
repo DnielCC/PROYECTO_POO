@@ -71,6 +71,33 @@ def logout():
     flash('Has cerrado sesión exitosamente.', 'info')
     return redirect(url_for('inicio'))
 
+@app.route('/reclutador/dashboard')
+def reclutador_dashboard():
+    
+    return render_template('reclutador/dashboard.html')
+
+@app.route('/reclutador/vacantes')
+def reclutador_vacantes():
+
+    return render_template('reclutador/vacantes.html')
+
+@app.route('/reclutador/postulaciones')
+def reclutador_postulaciones():
+    
+    return render_template('reclutador/postulaciones.html')
+
+@app.route('/reclutador/candidato/<int:id>')
+def reclutador_candidato(id):
+  
+    return render_template('reclutador/candidato.html')
+
+@app.route('/reclutador/crear_vacante')
+def reclutador_crear_vacante():
+  
+    return render_template('reclutador/crear_vacante.html')    
+
+
+
 @app.route('/Registro/informacion', methods=['GET', 'POST'])
 def info():
     if 'user_id' not in session:

@@ -1,0 +1,421 @@
+{% extends "reclutador/base.html" %}
+
+{% block title %}Perfil del Candidato - Reclutador{% endblock %}
+
+{% block page_title %}Perfil del Candidato{% endblock %}
+
+{% block content %}
+<!-- Header with Actions -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 1.5rem; font-weight: 600; color: #1F2937; margin-bottom: 0.5rem;">Carlos Mendoza</h2>
+        <p style="color: #6B7280; margin: 0;">Desarrollador Frontend Senior • Postulación recibida hace 2 horas</p>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+        <a href="{{ url_for('reclutador_postulaciones') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Volver a Postulaciones
+        </a>
+        <button class="btn btn-primary" onclick="acceptCandidate()">
+            <i class="fas fa-check"></i>
+            Aceptar Candidato
+        </button>
+        <button class="btn btn-danger" onclick="rejectCandidate()">
+            <i class="fas fa-times"></i>
+            Rechazar
+        </button>
+    </div>
+</div>
+
+<!-- Candidate Profile Grid -->
+<div class="grid grid-cols-3" style="gap: 2rem;">
+    <!-- Main Profile Card -->
+    <div class="card" style="grid-column: span 2;">
+        <div class="card-header">
+            <h3 class="card-title">Información Personal</h3>
+            <span class="badge badge-warning">En Revisión</span>
+        </div>
+        
+        <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #3B82F6, #1E40AF); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: #1F2937; margin-bottom: 0.5rem;">Carlos Mendoza</h3>
+                    <p style="color: #6B7280; margin-bottom: 0.5rem;">Desarrollador Frontend Senior</p>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <span class="badge badge-info">5 años experiencia</span>
+                        <span class="badge badge-info">Querétaro, México</span>
+                        <span class="badge badge-info">Disponible inmediatamente</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2" style="gap: 1.5rem;">
+                <div>
+                    <h4 style="font-size: 1.125rem; font-weight: 600; color: #1F2937; margin-bottom: 1rem;">
+                        <i class="fas fa-envelope" style="color: #3B82F6; margin-right: 0.5rem;"></i>
+                        Información de Contacto
+                    </h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div>
+                            <div style="font-weight: 600; color: #374151;">Email</div>
+                            <div style="color: #6B7280;">carlos.mendoza@email.com</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #374151;">Teléfono</div>
+                            <div style="color: #6B7280;">+52 55 1234 5678</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #374151;">LinkedIn</div>
+                            <div style="color: #6B7280;">linkedin.com/in/carlos-mendoza</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #374151;">Portfolio</div>
+                            <div style="color: #6B7280;">carlosmendoza.dev</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 style="font-size: 1.125rem; font-weight: 600; color: #1F2937; margin-bottom: 1rem;">
+                        <i class="fas fa-graduation-cap" style="color: #10B981; margin-right: 0.5rem;"></i>
+                        Educación
+                    </h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div>
+                            <div style="font-weight: 600; color: #374151;">Ingeniería en Sistemas Computacionales</div>
+                            <div style="color: #6B7280;">Universidad Tecnológica de Querétaro</div>
+                            <div style="color: #6B7280; font-size: 0.875rem;">2018 - 2022</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #374151;">Certificaciones</div>
+                            <div style="color: #6B7280;">AWS Certified Developer, React Certification</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Stats Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Evaluación</h3>
+        </div>
+        
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 600; color: #374151;">Puntuación General</span>
+                        <span style="font-weight: 700; color: #10B981; font-size: 1.25rem;">85%</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background: #E5E7EB; border-radius: 4px; overflow: hidden;">
+                        <div style="width: 85%; height: 100%; background: linear-gradient(90deg, #10B981, #059669);"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 600; color: #374151;">Experiencia</span>
+                        <span style="font-weight: 600; color: #3B82F6;">90%</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden;">
+                        <div style="width: 90%; height: 100%; background: #3B82F6;"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 600; color: #374151;">Habilidades</span>
+                        <span style="font-weight: 600; color: #F59E0B;">80%</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden;">
+                        <div style="width: 80%; height: 100%; background: #F59E0B;"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 600; color: #374151;">Cultura</span>
+                        <span style="font-weight: 600; color: #8B5CF6;">75%</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden;">
+                        <div style="width: 75%; height: 100%; background: #8B5CF6;"></div>
+                    </div>
+                </div>
+                
+                <div style="padding-top: 1rem; border-top: 1px solid #E5E7EB;">
+                    <div style="text-align: center;">
+                        <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Recomendación</div>
+                        <span class="badge badge-success">Altamente Recomendado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Skills and Experience -->
+<div class="grid grid-cols-2" style="gap: 2rem; margin-top: 2rem;">
+    <!-- Skills Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Habilidades Técnicas</h3>
+        </div>
+        
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Frontend</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <span class="badge badge-info">JavaScript</span>
+                        <span class="badge badge-info">React</span>
+                        <span class="badge badge-info">Vue.js</span>
+                        <span class="badge badge-info">TypeScript</span>
+                        <span class="badge badge-info">HTML5</span>
+                        <span class="badge badge-info">CSS3</span>
+                        <span class="badge badge-info">Sass</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Backend</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <span class="badge badge-info">Node.js</span>
+                        <span class="badge badge-info">Express</span>
+                        <span class="badge badge-info">Python</span>
+                        <span class="badge badge-info">Django</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Herramientas</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <span class="badge badge-info">Git</span>
+                        <span class="badge badge-info">Docker</span>
+                        <span class="badge badge-info">AWS</span>
+                        <span class="badge badge-info">Figma</span>
+                        <span class="badge badge-info">Jira</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Experience Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Experiencia Laboral</h3>
+        </div>
+        
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">Desarrollador Frontend Senior</div>
+                            <div style="color: #6B7280;">TechCorp Solutions</div>
+                        </div>
+                        <span style="font-size: 0.875rem; color: #6B7280;">2022 - Presente</span>
+                    </div>
+                    <p style="color: #6B7280; font-size: 0.875rem; line-height: 1.5;">
+                        Lideré el desarrollo de aplicaciones web responsivas utilizando React y TypeScript. 
+                        Implementé mejores prácticas de desarrollo y mentoreé a desarrolladores junior.
+                    </p>
+                </div>
+                
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">Desarrollador Frontend</div>
+                            <div style="color: #6B7280;">Digital Innovations</div>
+                        </div>
+                        <span style="font-size: 0.875rem; color: #6B7280;">2020 - 2022</span>
+                    </div>
+                    <p style="color: #6B7280; font-size: 0.875rem; line-height: 1.5;">
+                        Desarrollé interfaces de usuario interactivas y optimicé el rendimiento de aplicaciones web.
+                    </p>
+                </div>
+                
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">Desarrollador Junior</div>
+                            <div style="color: #6B7280;">StartupTech</div>
+                        </div>
+                        <span style="font-size: 0.875rem; color: #6B7280;">2019 - 2020</span>
+                    </div>
+                    <p style="color: #6B7280; font-size: 0.875rem; line-height: 1.5;">
+                        Participé en el desarrollo de aplicaciones web utilizando JavaScript y Vue.js.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Documents and Actions -->
+<div class="grid grid-cols-2" style="gap: 2rem; margin-top: 2rem;">
+    <!-- Documents Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Documentos</h3>
+        </div>
+        
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #F9FAFB; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-file-pdf" style="color: #EF4444; font-size: 1.25rem;"></i>
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">CV_Carlos_Mendoza.pdf</div>
+                            <div style="font-size: 0.75rem; color: #6B7280;">2.3 MB • Actualizado hace 1 mes</div>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-secondary btn-sm" data-tooltip="Descargar CV">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #F9FAFB; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-file-pdf" style="color: #EF4444; font-size: 1.25rem;"></i>
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">Carta_Presentacion.pdf</div>
+                            <div style="font-size: 0.75rem; color: #6B7280;">1.1 MB • Actualizado hace 2 semanas</div>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-secondary btn-sm" data-tooltip="Descargar Carta">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #F9FAFB; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-file-pdf" style="color: #EF4444; font-size: 1.25rem;"></i>
+                        <div>
+                            <div style="font-weight: 600; color: #1F2937;">Portfolio.pdf</div>
+                            <div style="font-size: 0.75rem; color: #6B7280;">5.7 MB • Actualizado hace 3 días</div>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-secondary btn-sm" data-tooltip="Descargar Portfolio">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Acciones</h3>
+        </div>
+        
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button class="btn btn-primary" onclick="scheduleInterview()">
+                    <i class="fas fa-calendar-plus"></i>
+                    Programar Entrevista
+                </button>
+                
+                <button class="btn btn-secondary" onclick="sendMessage()">
+                    <i class="fas fa-envelope"></i>
+                    Enviar Mensaje
+                </button>
+                
+                <button class="btn btn-secondary" onclick="requestDocuments()">
+                    <i class="fas fa-file-upload"></i>
+                    Solicitar Documentos
+                </button>
+                
+                <button class="btn btn-secondary" onclick="addNotes()">
+                    <i class="fas fa-sticky-note"></i>
+                    Agregar Notas
+                </button>
+                
+                <button class="btn btn-secondary" onclick="shareProfile()">
+                    <i class="fas fa-share"></i>
+                    Compartir Perfil
+                </button>
+                
+                <div style="padding-top: 1rem; border-top: 1px solid #E5E7EB;">
+                    <div style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Estado de la Postulación</div>
+                    <select class="form-select" onchange="updateStatus(this.value)">
+                        <option value="review" selected>En Revisión</option>
+                        <option value="interview">Entrevista Programada</option>
+                        <option value="accepted">Aceptado</option>
+                        <option value="rejected">Rechazado</option>
+                        <option value="hired">Contratado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function acceptCandidate() {
+    confirmAction('¿Estás seguro de aceptar a este candidato?', 'confirmAccept');
+}
+
+function rejectCandidate() {
+    confirmAction('¿Estás seguro de rechazar a este candidato?', 'confirmReject');
+}
+
+function confirmAccept() {
+    showNotification('Candidato aceptado exitosamente', 'success');
+    // Update status badge
+    document.querySelector('.badge').className = 'badge badge-success';
+    document.querySelector('.badge').textContent = 'Aceptado';
+}
+
+function confirmReject() {
+    showNotification('Candidato rechazado', 'error');
+    // Update status badge
+    document.querySelector('.badge').className = 'badge badge-danger';
+    document.querySelector('.badge').textContent = 'Rechazado';
+}
+
+function scheduleInterview() {
+    showNotification('Entrevista programada para el 25 de Noviembre', 'success');
+}
+
+function sendMessage() {
+    showNotification('Mensaje enviado al candidato', 'success');
+}
+
+function requestDocuments() {
+    showNotification('Solicitud de documentos enviada', 'success');
+}
+
+function addNotes() {
+    showNotification('Notas guardadas', 'success');
+}
+
+function shareProfile() {
+    showNotification('Enlace del perfil copiado al portapapeles', 'success');
+}
+
+function updateStatus(status) {
+    const statusMap = {
+        'review': { class: 'badge-warning', text: 'En Revisión' },
+        'interview': { class: 'badge-info', text: 'Entrevista Programada' },
+        'accepted': { class: 'badge-success', text: 'Aceptado' },
+        'rejected': { class: 'badge-danger', text: 'Rechazado' },
+        'hired': { class: 'badge-success', text: 'Contratado' }
+    };
+    
+    const badge = document.querySelector('.badge');
+    badge.className = `badge ${statusMap[status].class}`;
+    badge.textContent = statusMap[status].text;
+    
+    showNotification(`Estado actualizado a: ${statusMap[status].text}`, 'success');
+}
+</script>
+{% endblock %} 

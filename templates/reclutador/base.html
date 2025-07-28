@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Reclutador - Workify{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='reclutador/base.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="{{ url_for('static', filename='images/logonavbar.png') }}" alt="Workify" class="logo-img">
+                   
+                </div>
+              
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="{{ url_for('reclutador_dashboard') }}" class="nav-link {% if request.endpoint == 'reclutador_dashboard' %}active{% endif %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('reclutador_vacantes') }}" class="nav-link {% if request.endpoint == 'reclutador_vacantes' %}active{% endif %}">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Vacantes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('reclutador_crear_vacante') }}" class="nav-link {% if request.endpoint == 'reclutador_crear_vacante' %}active{% endif %}">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Crear Vacante</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('reclutador_postulaciones') }}" class="nav-link {% if request.endpoint == 'reclutador_postulaciones' %}active{% endif %}">
+                            <i class="fas fa-users"></i>
+                            <span>Postulaciones</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-content">
+                    <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+                    <div class="user-info">
+                        <span class="user-name">María González</span>
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='reclutador/base.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

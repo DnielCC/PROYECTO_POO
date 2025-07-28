@@ -1,0 +1,226 @@
+{% extends "reclutador/base.html" %}
+
+{% block title %}Dashboard - Reclutador{% endblock %}
+
+{% block page_title %}Panel de Reclutador{% endblock %}
+
+{% block content %}
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-number">12</div>
+                <div class="stat-label">Vacantes Activas</div>
+            </div>
+            <div class="stat-icon blue">
+                <i class="fas fa-briefcase"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-number">156</div>
+                <div class="stat-label">Total de Postulaciones</div>
+            </div>
+            <div class="stat-icon green">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-number">8</div>
+                <div class="stat-label">Nuevas Hoy</div>
+            </div>
+            <div class="stat-icon orange">
+                <i class="fas fa-clock"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-header">
+            <div>
+                <div class="stat-number">23</div>
+                <div class="stat-label">Candidatos Aceptados</div>
+            </div>
+            <div class="stat-icon purple">
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Applications -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Postulaciones Recientes</h2>
+        <a href="{{ url_for('reclutador_postulaciones') }}" class="btn btn-primary btn-sm">
+            <i class="fas fa-eye"></i>
+            Ver Todas
+        </a>
+    </div>
+    
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Candidato</th>
+                    <th>Vacante</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3B82F6, #1E40AF); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.75rem;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: #1F2937;">Carlos Mendoza</div>
+                                <div style="font-size: 0.75rem; color: #6B7280;">carlos.mendoza@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Desarrollador Frontend</td>
+                    <td>Hace 2 horas</td>
+                    <td><span class="badge badge-warning">En Revisión</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="{{ url_for('reclutador_candidato', id=1) }}" class="btn btn-secondary btn-sm" data-tooltip="Ver Perfil">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="btn btn-primary btn-sm" data-tooltip="Aceptar">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-tooltip="Rechazar">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #10B981, #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.75rem;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: #1F2937;">Ana Rodríguez</div>
+                                <div style="font-size: 0.75rem; color: #6B7280;">ana.rodriguez@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Analista de Datos</td>
+                    <td>Hace 4 horas</td>
+                    <td><span class="badge badge-success">Aceptada</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="{{ url_for('reclutador_candidato', id=2) }}" class="btn btn-secondary btn-sm" data-tooltip="Ver Perfil">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="btn btn-primary btn-sm" data-tooltip="Contactar">
+                                <i class="fas fa-envelope"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #F59E0B, #D97706); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.75rem;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: #1F2937;">Luis Pérez</div>
+                                <div style="font-size: 0.75rem; color: #6B7280;">luis.perez@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Desarrollador Backend</td>
+                    <td>Hace 6 horas</td>
+                    <td><span class="badge badge-danger">Rechazada</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="{{ url_for('reclutador_candidato', id=3) }}" class="btn btn-secondary btn-sm" data-tooltip="Ver Perfil">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="btn btn-primary btn-sm" data-tooltip="Reconsiderar">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="grid grid-cols-2" style="margin-top: 2rem;">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Acciones Rápidas</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <a href="{{ url_for('reclutador_crear_vacante') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Crear Nueva Vacante
+                </a>
+                <a href="{{ url_for('reclutador_vacantes') }}" class="btn btn-secondary">
+                    <i class="fas fa-briefcase"></i>
+                    Gestionar Vacantes
+                </a>
+                <a href="{{ url_for('reclutador_postulaciones') }}" class="btn btn-secondary">
+                    <i class="fas fa-users"></i>
+                    Ver Postulaciones
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Actividad Reciente</h3>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #F9FAFB; border-radius: 8px;">
+                    <div style="width: 8px; height: 8px; background: #10B981; border-radius: 50%;"></div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500; color: #1F2937;">Nueva postulación recibida</div>
+                        <div style="font-size: 0.75rem; color: #6B7280;">Hace 30 minutos</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #F9FAFB; border-radius: 8px;">
+                    <div style="width: 8px; height: 8px; background: #3B82F6; border-radius: 50%;"></div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500; color: #1F2937;">Vacante actualizada</div>
+                        <div style="font-size: 0.75rem; color: #6B7280;">Hace 2 horas</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #F9FAFB; border-radius: 8px;">
+                    <div style="width: 8px; height: 8px; background: #F59E0B; border-radius: 50%;"></div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 500; color: #1F2937;">Candidato aceptado</div>
+                        <div style="font-size: 0.75rem; color: #6B7280;">Hace 1 día</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
