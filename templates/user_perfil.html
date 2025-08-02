@@ -5,8 +5,8 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Mi Perfil - Workify</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet'href='/static/Perfil.css'>
-    <link rel='stylesheet'href='/static/Inicio_usuarios.css'>
+    <link rel='stylesheet' href='/static/Perfil.css'>
+    <link rel='stylesheet' href='/static/Inicio_usuarios.css'>
     <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -19,34 +19,24 @@
         </div>
         
         <div class="profile-card">
-            
-            
             <div class="profile-info">
-                <h2 class="user-name">Juan Carlos Pérez</h2>
-                <p class="user-email">
-                    <i class="fas fa-envelope"></i>
-                    juan.perez@email.com
-                </p>
-                <p class="user-phone">
-                    <i class="fas fa-phone"></i>
-                    +52 55 1234 5678
-                </p>
-                <p class="user-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    Querétaro, México
-                </p>
-                <p class="user-position">
-                    <i class="fas fa-briefcase"></i>
-                    Desarrollador Web
-                </p>
+                {% if usuario %}
+                    <h2 class="user-name">{{ usuario.nombre_completo }}</h2>
+
+                    <p><strong>Empleo deseado:</strong> {{ usuario.empleo }}</p>
+                    <p><strong>Experiencia:</strong> {{ usuario.experiencia }}</p>
+                    <p><strong>Grado de estudios:</strong> {{ usuario.grado }}</p>
+                    <p><strong>Ciudad:</strong> {{ usuario.ciudad }}</p>
+                    <p><strong>Código postal:</strong> {{ usuario.codigo_postal }}</p>
+                {% else %}
+                    <p>No se encontró información del perfil.</p>
+                {% endif %}
             </div>
-            
+
             <div class="profile-actions">
-                <button class="btn-change-password">
-                    <i class="fas fa-edit"></i>
-                    Editar perfil
-                </button>
-                
+                <a href="{{ url_for('info') }}" class="btn-change-password">
+                    <i class="fas fa-edit"></i> Editar perfil
+                </a>
             </div>
         </div>
     </div>

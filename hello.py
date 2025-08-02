@@ -236,9 +236,49 @@ def editar_usuario(id):
     return redirect(url_for('admin_dashboard'))
 #----------END ADMIN DASHBOARD----------
 
+
+
+
+
+
 @app.route('/user/perfil')
-def perfil():
-   return render_template('user_perfil.html')
+def perfil_usuario():
+    if 'user_id' not in session:
+        return redirect(url_for('user_login'))
+
+    user_id = session['user_id']
+
+    query = f"""
+        SELECT nombre, apellidos, 
+               empleos.empleo, experiencia.experiencia, 
+               grado_estudios.grado, ciudad_referencia.ciudad, cp.cp
+        FROM informacion
+        INNER JOIN empleos ON informacion.id_empleos = empleos.id
+        INNER JOIN experiencia ON informacion.id_experiencia = experiencia.id
+        INNER JOIN grado_estudios ON informacion.id_grado_estudios = grado_estudios.id
+        INNER JOIN ciudad_referencia ON informacion.id_ciudad = ciudad_referencia.id
+        INNER JOIN cp ON informacion.id_cp = cp.id
+        WHERE informacion.id_usuario = {user_id}
+    """
+
+    resultado = conexion.get_datos(query)
+
+    if resultado:
+        datos = resultado[0]
+        usuario = {
+            'nombre_completo': datos[0] + ' ' + datos[1],
+            'empleo': datos[2],
+            'experiencia': datos[3],
+            'grado': datos[4],
+            'ciudad': datos[5],
+            'codigo_postal': datos[6]
+        }
+    else:
+        flash("Perfil no encontrado. Completa tu información.", "info")
+        usuario = None
+
+    return render_template('user_perfil.html', usuario=usuario)
+
 
 @app.route('/user/postulaciones')
 def mis_postulaciones():
