@@ -180,29 +180,61 @@ def info():
 def inicio_usuarios():
     return render_template('inicio_usuarios.html')
 
+#----------ADMIN DASHBOARD----------
 @app.route('/admin/dashboard')
 def admin_dashboard():
     query = """
         SELECT 
-            login.correo,
-            login.tipo_usuario,
-            informacion.nombre,
-            informacion.apellidos,
-            empleos.empleo,
-            experiencia.experiencia,
-            grado_estudios.grado,
-            ciudad_referencia.ciudad,
-            cp.cp
-        FROM informacion
-        INNER JOIN login ON informacion.id_usuario = login.id
-        INNER JOIN empleos ON informacion.id_empleos = empleos.id
-        INNER JOIN experiencia ON informacion.id_experiencia = experiencia.id
-        INNER JOIN grado_estudios ON informacion.id_grado_estudios = grado_estudios.id
-        INNER JOIN ciudad_referencia ON informacion.id_ciudad = ciudad_referencia.id
-        INNER JOIN cp ON informacion.id_cp = cp.id
+            id, correo, tipo_usuario
+        FROM login
+        WHERE tipo_usuario IN ('admin', 'reclutador')
     """
     usuarios = conexion.get_datos(query)
     return render_template('dashboard_admin.html', usuarios=usuarios)
+
+@app.route('/admin/agregar_usuario', methods=['POST'])
+def agregar_usuario():
+    correo = request.form['correo']
+    contra = request.form['contra']
+    tipo_usuario = request.form['tipo_usuario']
+    # Solo admins y reclutadores
+    if tipo_usuario in ['admin', 'reclutador']:
+        conexion.insert_datos(f"INSERT INTO login (correo, contra, tipo_usuario) VALUES ('{correo}', '{contra}', '{tipo_usuario}')")
+        flash('Usuario agregado correctamente.', 'success')
+    else:
+        flash('Solo puedes agregar administradores o reclutadores.', 'error')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/eliminar_usuario/<int:id>', methods=['POST'])
+def eliminar_usuario(id):
+    usuario = conexion.get_datos(f"SELECT tipo_usuario FROM login WHERE id={id}")
+    if usuario and usuario[0][0] in ['admin', 'reclutador']:
+        conexion.insert_datos(f"DELETE FROM login WHERE id={id}")
+        flash('Usuario eliminado correctamente.', 'success')
+    else:
+        flash('No puedes eliminar aspirantes desde aquí.', 'error')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/editar_usuario/<int:id>', methods=['POST'])
+def editar_usuario(id):
+    correo = request.form['correo']
+    contra = request.form['contra']
+    tipo_usuario = request.form['tipo_usuario']
+    # Solo admins y reclutadores
+    if tipo_usuario in ['admin', 'reclutador']:
+        update_fields = []
+        if correo:
+            update_fields.append(f"correo='{correo}'")
+        if contra:  # Solo actualiza si se escribió algo
+            update_fields.append(f"contra='{contra}'")
+        update_fields.append(f"tipo_usuario='{tipo_usuario}'")
+        update_query = f"UPDATE login SET {', '.join(update_fields)} WHERE id={id}"
+        conexion.insert_datos(update_query)
+        flash('Usuario editado correctamente.', 'success')
+    else:
+        flash('Solo puedes editar administradores o reclutadores.', 'error')
+    return redirect(url_for('admin_dashboard'))
+#----------END ADMIN DASHBOARD----------
 
 @app.route('/user/perfil')
 def perfil():
