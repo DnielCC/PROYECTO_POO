@@ -25,7 +25,7 @@
         <h3 class="card-title">Información de la Vacante</h3>
     </div>
     
-    <form class="card-body">
+    <form class="card-body" method="POST" action="{{ url_for('reclutador_crear_vacante') }}">
         <div class="grid grid-cols-2">
             <!-- Basic Information -->
             <div>
@@ -203,21 +203,28 @@
     
     <div class="card-body" id="preview-content" style="display: none;">
         <div style="border: 1px solid #E5E7EB; border-radius: 8px; padding: 1.5rem; background: #F9FAFB;">
-            <h3 style="color: #1F2937; margin-bottom: 0.5rem;">Desarrollador Frontend Senior</h3>
-            <p style="color: #6B7280; margin-bottom: 1rem;">TechCorp Solutions • Querétaro, México</p>
+            <h3 id="preview-title" style="color: #1F2937; margin-bottom: 0.5rem;">Título del Puesto</h3>
+            <p id="preview-company-location" style="color: #6B7280; margin-bottom: 1rem;">Empresa • Ubicación</p>
             
-            <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                <span class="badge badge-info">Tiempo Completo</span>
-                <span class="badge badge-info">Remoto</span>
-                <span class="badge badge-info">Senior</span>
+            <div id="preview-badges" style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <!-- Badges se generarán dinámicamente -->
             </div>
             
-            <p style="color: #374151; line-height: 1.6;">
-                Estamos buscando un desarrollador frontend senior para unirse a nuestro equipo...
+            <p id="preview-description" style="color: #374151; line-height: 1.6;">
+                Descripción del puesto aparecerá aquí...
             </p>
             
+            <div id="preview-skills" style="margin-top: 1rem;">
+                <h4 style="font-size: 1rem; color: #1F2937; margin-bottom: 0.5rem;">Habilidades Requeridas:</h4>
+                <div id="preview-required-skills" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+                
+                <h4 style="font-size: 1rem; color: #1F2937; margin-top: 1rem; margin-bottom: 0.5rem;">Habilidades Deseadas:</h4>
+                <div id="preview-desired-skills" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+            </div>
+            
             <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #E5E7EB;">
-                <small style="color: #6B7280;">Publicado el 20 de Noviembre, 2024</small>
+                <small id="preview-salary" style="color: #6B7280;"></small>
+                <small id="preview-deadline" style="color: #6B7280; display: block; margin-top: 0.5rem;"></small>
             </div>
         </div>
     </div>
@@ -226,29 +233,134 @@
 
 {% block extra_js %}
 <script>
-function saveDraft() {
-    showNotification('Borrador guardado exitosamente', 'success');
-}
-
+// Función para mostrar/ocultar la vista previa
 function togglePreview() {
     const preview = document.getElementById('preview-content');
-    if (preview.style.display === 'none') {
-        preview.style.display = 'block';
-    } else {
-        preview.style.display = 'none';
+    preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
+    if(preview.style.display === 'block') {
+        updatePreview(); // Actualizar al mostrar
     }
 }
 
-// Auto-save functionality
-let autoSaveTimer;
-document.querySelectorAll('input, select, textarea').forEach(element => {
-    element.addEventListener('input', function() {
-        clearTimeout(autoSaveTimer);
-        autoSaveTimer = setTimeout(() => {
-            // Auto-save logic would go here
-            console.log('Auto-saving...');
-        }, 2000);
+// Función para actualizar la vista previa
+function updatePreview() {
+    // Obtener valores del formulario
+    const jobTitle = document.getElementById('job_title').value || 'Título del Puesto';
+    const company = document.getElementById('company').value || 'Empresa';
+    const location = document.getElementById('location').value || 'Ubicación';
+    const jobType = document.getElementById('job_type').value;
+    const workMode = document.getElementById('work_mode').value;
+    const experience = document.getElementById('experience_level').value;
+    const salaryMin = document.getElementById('salary_min').value;
+    const salaryMax = document.getElementById('salary_max').value;
+    const deadline = document.getElementById('deadline').value;
+    const description = document.getElementById('job_description').value || 'Descripción del puesto aparecerá aquí...';
+    const requirements = document.getElementById('requirements').value;
+    const skills = document.getElementById('skills').value;
+    const niceToHave = document.getElementById('nice_to_have').value;
+    
+    // Actualizar elementos de la vista previa
+    document.getElementById('preview-title').textContent = jobTitle;
+    document.getElementById('preview-company-location').textContent = `${company} • ${location}`;
+    document.getElementById('preview-description').textContent = description;
+    
+    // Actualizar badges
+    const badgesContainer = document.getElementById('preview-badges');
+    badgesContainer.innerHTML = '';
+    
+    // Mapeo de valores a textos para los badges
+    const jobTypeMap = {
+        'full-time': 'Tiempo Completo',
+        'part-time': 'Medio Tiempo',
+        'contract': 'Por Contrato',
+        'internship': 'Prácticas'
+    };
+    
+    const workModeMap = {
+        'presencial': 'Presencial',
+        'remote': 'Remoto',
+        'hybrid': 'Híbrido'
+    };
+    
+    const experienceMap = {
+        'entry': 'Sin experiencia',
+        'junior': 'Junior',
+        'mid': 'Mid-level',
+        'senior': 'Senior',
+        'lead': 'Lead/Manager'
+    };
+    
+    // Añadir badges según los valores seleccionados
+    if(jobType) {
+        const badge = createBadge(jobTypeMap[jobType], 'badge-info');
+        badgesContainer.appendChild(badge);
+    }
+    
+    if(workMode) {
+        const badge = createBadge(workModeMap[workMode], 'badge-info');
+        badgesContainer.appendChild(badge);
+    }
+    
+    if(experience) {
+        const badge = createBadge(experienceMap[experience], 'badge-info');
+        badgesContainer.appendChild(badge);
+    }
+    
+    // Actualizar información de salario
+    const salaryText = [];
+    if(salaryMin) salaryText.push(`Desde: $${salaryMin} MXN`);
+    if(salaryMax) salaryText.push(`Hasta: $${salaryMax} MXN`);
+    document.getElementById('preview-salary').textContent = salaryText.join(' | ');
+    
+    // Actualizar fecha límite
+    if(deadline) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = new Date(deadline).toLocaleDateString('es-MX', options);
+        document.getElementById('preview-deadline').textContent = `Fecha límite: ${formattedDate}`;
+    } else {
+        document.getElementById('preview-deadline').textContent = '';
+    }
+    
+    // Actualizar habilidades
+    updateSkillsPreview('preview-required-skills', skills);
+    updateSkillsPreview('preview-desired-skills', niceToHave);
+}
+
+// Función auxiliar para crear badges
+function createBadge(text, className) {
+    const badge = document.createElement('span');
+    badge.className = `badge ${className}`;
+    badge.textContent = text;
+    return badge;
+}
+
+// Función para actualizar las habilidades en la vista previa
+function updateSkillsPreview(containerId, skillsText) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    
+    if(!skillsText) return;
+    
+    const skills = skillsText.split(',').map(skill => skill.trim()).filter(skill => skill);
+    
+    skills.forEach(skill => {
+        const skillBadge = createBadge(skill, 'badge-secondary');
+        container.appendChild(skillBadge);
     });
+}
+
+// Escuchar cambios en los inputs del formulario
+document.querySelectorAll('#job_title, #company, #location, #job_type, #work_mode, #experience_level, #salary_min, #salary_max, #deadline, #job_description, #requirements, #skills, #nice_to_have').forEach(input => {
+    input.addEventListener('input', updatePreview);
+    input.addEventListener('change', updatePreview);
+});
+
+// Actualizar al cargar la página si hay valores
+document.addEventListener('DOMContentLoaded', function() {
+    // Si el preview está visible, actualizarlo
+    if(document.getElementById('preview-content').style.display !== 'none') {
+        updatePreview();
+    }
 });
 </script>
-{% endblock %} 
+{% endblock %}

@@ -21,6 +21,7 @@
                 <!-- Formulario para agregar Admin/Empresa -->
                 <h3>Agregar Usuario (Administrador/Reclutador)</h3>
                 <form method="POST" action="{{ url_for('agregar_usuario') }}" style="margin-bottom:2rem;">
+                    <input type="text" name="username" placeholder="Nombre de usuario" required>
                     <input type="email" name="correo" placeholder="Correo" required>
                     <input type="password" name="contra" placeholder="Contraseña" required>
                     <select name="tipo_usuario" required>
@@ -31,11 +32,11 @@
                 </form>
 
                 <!-- Tabla de usuarios admin y empresa -->
-                <h3>Usuarios Registrados (Administrador/Reclutador)</h3>
                 <table>
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Usuario</th>
                             <th>Correo</th>
                             <th>Tipo</th>
                             <th>Acción</th>
@@ -45,11 +46,12 @@
                         {% for u in usuarios %}
                         <tr>
                             <td>{{ u[0] }}</td> <!-- ID -->
+                            <td>{{ u[3] }}</td> <!-- Username -->
                             <td>{{ u[1] }}</td> <!-- Correo -->
                             <td>{{ u[2] }}</td> <!-- Tipo -->
                             <td style="display: flex; gap: 0.5rem;">
                                 <button type="button"
-                                    onclick="openEditModal('{{ u[0] }}', '{{ u[1] }}', '{{ u[2] }}')"
+                                    onclick="openEditModal('{{ u[0] }}', '{{ u[1] }}', '{{ u[2] }}', '{{ u[3] }}')"
                                     style="background:#3b82f6;color:#fff;border:none;padding:0.5rem 1rem;border-radius:0.5rem;">
                                     Modificar
                                 </button>
@@ -61,48 +63,29 @@
                         {% endfor %}
                     </tbody>
                 </table>
-            </div>
-            <div class="tab-content" id="empleos">
-                <h2>Empleos</h2>
-                <p>Aquí se mostrará la lista de empleos. (Lógica de base de datos pendiente)</p>
-            </div>
-            <div class="tab-content" id="reportes">
-                <h2>Reportes</h2>
-                <p>Aquí se mostrarán los reportes y estadísticas. (Lógica de base de datos pendiente)</p>
-            </div>
-        </main>
-    </div>
-
     <!-- Modal para editar usuario -->
-    <div id="editUserModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeEditModal()">&times;</span>
-            <h2>Editar Usuario</h2>
-            <form id="editUserForm" method="POST">
-                <input type="hidden" name="id" id="edit-id">
-                <label for="edit-correo">Correo:</label>
-                <input type="email" name="correo" id="edit-correo" required>
-                <label for="edit-contra">Contraseña:</label>
-                <input type="password" name="contra" id="edit-contra" placeholder="Nueva contraseña (opcional)">
-                <label for="edit-tipo">Tipo de usuario:</label>
-                <select name="tipo_usuario" id="edit-tipo" required>
-                    <option value="admin">Administrador</option>
-                    <option value="reclutador">Reclutador</option>
-                </select>
-                <button type="submit">Guardar Cambios</button>
-            </form>
+            <div id="editUserModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeEditModal()">&times;</span>
+                <h2>Editar Usuario</h2>
+                <form id="editUserForm" method="POST">
+                    <input type="hidden" name="id" id="edit-id">
+                    <label for="edit-username">Nombre de usuario:</label>
+                    <input type="text" name="username" id="edit-username" required>
+                    <label for="edit-correo">Correo:</label>
+                    <input type="email" name="correo" id="edit-correo" required>
+                    <label for="edit-contra">Contraseña:</label>
+                    <input type="password" name="contra" id="edit-contra" placeholder="Nueva contraseña (opcional)">
+                    <label for="edit-tipo">Tipo de usuario:</label>
+                    <select name="tipo_usuario" id="edit-tipo" required>
+                        <option value="admin">Administrador</option>
+                        <option value="reclutador">Reclutador</option>
+                    </select>
+                    <button type="submit">Guardar Cambios</button>
+                </form>
+            </div>
         </div>
-    </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul class="flashes">
-          {% for category, message in messages %}
-            <li class="{{ category }}">{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
 
     <script>
         // Tabs
@@ -124,8 +107,9 @@
             sidebar.classList.toggle('collapsed');
         }
         // Edit User Modal
-        function openEditModal(id, correo, tipo) {
+        function openEditModal(id, correo, tipo, username) {
             document.getElementById('edit-id').value = id;
+            document.getElementById('edit-username').value = username;
             document.getElementById('edit-correo').value = correo;
             document.getElementById('edit-tipo').value = tipo;
             document.getElementById('edit-contra').value = '';

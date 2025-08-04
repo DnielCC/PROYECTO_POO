@@ -63,9 +63,9 @@
                 <div class="header-content">
                     <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
                     <div class="user-info">
-                        <span class="user-name">María González</span>
+                        <span class="user-name">{{ session.username }}</span>
                         <div class="user-avatar">
-                            <i class="fas fa-user"></i>
+                            {{ session.username|first|upper }}
                         </div>
                     </div>
                 </div>
@@ -80,4 +80,4 @@
     <script src="{{ url_for('static', filename='reclutador/base.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>
-</html> 
+</html>
