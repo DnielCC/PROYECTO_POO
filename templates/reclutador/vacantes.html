@@ -1,20 +1,51 @@
 {% extends "reclutador/base.html" %}
 
-{% block title %}Vacantes Publicadas - Reclutador{% endblock %}
+{% block title %}Gestión de Vacantes - Reclutador{% endblock %}
 
-{% block page_title %}Vacantes Publicadas{% endblock %}
+{% block page_title %}Gestión de Vacantes{% endblock %}
 
 {% block content %}
 <!-- Header Actions -->
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
     <div>
-        <h2 style="font-size: 1.5rem; font-weight: 600; color: #1F2937; margin-bottom: 0.5rem;">Gestionar Vacantes</h2>
-        <p style="color: #6B7280; margin: 0;">Administra todas las vacantes publicadas</p>
+        <h2 style="font-size: 1.5rem; font-weight: 600; color: #1F2937; margin-bottom: 0.5rem;">Gestión de Vacantes</h2>
+        <p style="color: #6B7280; margin: 0;">Administra todas las vacantes de tu empresa</p>
     </div>
-    <a href="{{ url_for('reclutador_crear_vacante') }}" class="btn btn-primary">
+    <button class="btn btn-primary" onclick="openCreateModal()">
         <i class="fas fa-plus"></i>
         Nueva Vacante
-    </a>
+    </button>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon blue">
+            <i class="fas fa-briefcase"></i>
+        </div>
+        <div class="stat-content">
+            <h3 class="stat-number">{{ total_vacantes }}</h3>
+            <p class="stat-label">Total de Vacantes</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+            <h3 class="stat-number">{{ vacantes_activas }}</h3>
+            <p class="stat-label">Vacantes Activas</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon orange">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+            <h3 class="stat-number">{{ total_postulaciones }}</h3>
+            <p class="stat-label">Total de Postulaciones</p>
+        </div>
+    </div>
 </div>
 
 <!-- Filters -->
@@ -23,224 +54,102 @@
         <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 200px;">
                 <label class="form-label">Buscar</label>
-                <input type="text" class="form-input" placeholder="Buscar por título o empresa...">
+                <input type="text" id="searchInput" class="form-input" placeholder="Buscar por título, empresa o ubicación...">
             </div>
             <div style="min-width: 150px;">
                 <label class="form-label">Estado</label>
-                <select class="form-select">
-                    <option value="">Todos</option>
-                    <option value="active">Activas</option>
-                    <option value="closed">Cerradas</option>
-                    <option value="draft">Borrador</option>
+                <select id="statusFilter" class="form-select">
+                    <option value="">Todos los estados</option>
+                    <option value="Activa">Activa</option>
+                    <option value="Pausada">Pausada</option>
+                    <option value="Cerrada">Cerrada</option>
                 </select>
             </div>
             <div style="min-width: 150px;">
                 <label class="form-label">Tipo</label>
-                <select class="form-select">
-                    <option value="">Todos</option>
-                    <option value="full-time">Tiempo Completo</option>
-                    <option value="part-time">Medio Tiempo</option>
-                    <option value="remote">Remoto</option>
-                    <option value="hybrid">Híbrido</option>
+                <select id="typeFilter" class="form-select">
+                    <option value="">Todos los tipos</option>
+                    <option value="Tiempo Completo">Tiempo Completo</option>
+                    <option value="Medio Tiempo">Medio Tiempo</option>
+                    <option value="Por Contrato">Por Contrato</option>
+                    <option value="Prácticas">Prácticas</option>
                 </select>
             </div>
             <div style="display: flex; align-items: end;">
-                <button class="btn btn-secondary" style="height: 42px;">
+                <button class="btn btn-secondary" onclick="applyFilters()" style="height: 42px;">
                     <i class="fas fa-filter"></i>
                     Filtrar
+                </button>
+                <button class="btn btn-secondary" onclick="clearFilters()" style="height: 42px; margin-left: 0.5rem;">
+                    <i class="fas fa-times"></i>
+                    Limpiar
                 </button>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Vacancies Table -->
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Lista de Vacantes</h3>
-        <div style="display: flex; gap: 0.5rem;">
-            <button class="btn btn-secondary btn-sm" data-tooltip="Exportar">
-                <i class="fas fa-download"></i>
-            </button>
-            <button class="btn btn-secondary btn-sm" data-tooltip="Vista de Grilla">
-                <i class="fas fa-th-large"></i>
-            </button>
-        </div>
-    </div>
     
-    <div class="table-container">
-        <table class="table">
+    <div class="table-container" id="tableView">
+        <table class="table" id="vacanciesTable">
             <thead>
                 <tr>
-                    <th>Título</th>
-                    <th>Empresa</th>
-                    <th>Ubicación</th>
-                    <th>Fecha Publicada</th>
-                    <th>Postulaciones</th>
+                    <th onclick="sortTable(0)">Título <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(1)">Empresa <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(2)">Ubicación <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(3)">Fecha Publicada <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(4)">Postulaciones <i class="fas fa-sort"></i></th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
+            <tbody id="vacanciesTableBody">
+            {% for vacante in vacantes %}
+                <tr data-vacante-id="{{ vacante[0] }}">
                     <td>
                         <div>
-                            <div style="font-weight: 600; color: #1F2937;">Desarrollador Frontend Senior</div>
-                            <div style="font-size: 0.75rem; color: #6B7280;">Tiempo Completo • Remoto</div>
+                            <div style="font-weight: 600; color: #1F2937;">{{ vacante[1] }}</div>
+                            <div style="font-size: 0.75rem; color: #6B7280;">{{ vacante[2] }}</div>
                         </div>
                     </td>
-                    <td>TechCorp Solutions</td>
-                    <td>Querétaro, México</td>
-                    <td>15 Nov 2024</td>
+                    <td>{{ vacante[2] }}</td>
+                    <td>{{ vacante[3] }}</td>
+                    <td>{{ vacante[4] }}</td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-weight: 600; color: #1F2937;">24</span>
+                            <span style="font-weight: 600; color: #1F2937;">{{ vacante[5] }}</span>
                             <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
                         </div>
                     </td>
-                    <td><span class="badge badge-success">Activa</span></td>
+                    <td>
+                        <select class="form-select" onchange="changeStatus('{{ vacante[0] }}', this.value)" style="min-width: 120px;">
+                            {% for est in estatus_catalogo %}
+                                <option value="{{ est[0] }}" {% if est[1] == vacante[6] %}selected{% endif %}>{{ est[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
                     <td>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-secondary btn-sm" data-tooltip="Ver Detalles">
+                            <button class="btn btn-secondary btn-sm" onclick="viewVacancy('{{ vacante[0] }}')" data-tooltip="Ver Detalles">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn btn-primary btn-sm" data-tooltip="Editar">
+                            <button class="btn btn-primary btn-sm" onclick="editVacancy('{{ vacante[0] }}')" data-tooltip="Editar">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-danger btn-sm" data-tooltip="Eliminar" onclick="confirmAction('¿Estás seguro de eliminar esta vacante?', 'deleteVacancy')">
+                            <button class="btn btn-danger btn-sm" onclick="deleteVacancy('{{ vacante[0] }}')" data-tooltip="Eliminar">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
                     </td>
                 </tr>
-                
-                <tr>
-                    <td>
-                        <div>
-                            <div style="font-weight: 600; color: #1F2937;">Analista de Datos</div>
-                            <div style="font-size: 0.75rem; color: #6B7280;">Tiempo Completo • Presencial</div>
-                        </div>
-                    </td>
-                    <td>DataInsights Inc</td>
-                    <td>México D.F.</td>
-                    <td>12 Nov 2024</td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-weight: 600; color: #1F2937;">18</span>
-                            <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
-                        </div>
-                    </td>
-                    <td><span class="badge badge-success">Activa</span></td>
-                    <td>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-secondary btn-sm" data-tooltip="Ver Detalles">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-primary btn-sm" data-tooltip="Editar">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-danger btn-sm" data-tooltip="Eliminar" onclick="confirmAction('¿Estás seguro de eliminar esta vacante?', 'deleteVacancy')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td>
-                        <div>
-                            <div style="font-weight: 600; color: #1F2937;">Desarrollador Backend</div>
-                            <div style="font-size: 0.75rem; color: #6B7280;">Tiempo Completo • Híbrido</div>
-                        </div>
-                    </td>
-                    <td>InnovateSoft</td>
-                    <td>Guadalajara, México</td>
-                    <td>10 Nov 2024</td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-weight: 600; color: #1F2937;">31</span>
-                            <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
-                        </div>
-                    </td>
-                    <td><span class="badge badge-warning">Cerrada</span></td>
-                    <td>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-secondary btn-sm" data-tooltip="Ver Detalles">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-primary btn-sm" data-tooltip="Reabrir">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <button class="btn btn-danger btn-sm" data-tooltip="Eliminar" onclick="confirmAction('¿Estás seguro de eliminar esta vacante?', 'deleteVacancy')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td>
-                        <div>
-                            <div style="font-weight: 600; color: #1F2937;">UX/UI Designer</div>
-                            <div style="font-size: 0.75rem; color: #6B7280;">Medio Tiempo • Remoto</div>
-                        </div>
-                    </td>
-                    <td>CreativeStudio</td>
-                    <td>Monterrey, México</td>
-                    <td>8 Nov 2024</td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-weight: 600; color: #1F2937;">12</span>
-                            <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
-                        </div>
-                    </td>
-                    <td><span class="badge badge-success">Activa</span></td>
-                    <td>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-secondary btn-sm" data-tooltip="Ver Detalles">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-primary btn-sm" data-tooltip="Editar">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-danger btn-sm" data-tooltip="Eliminar" onclick="confirmAction('¿Estás seguro de eliminar esta vacante?', 'deleteVacancy')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td>
-                        <div>
-                            <div style="font-weight: 600; color: #1F2937;">DevOps Engineer</div>
-                            <div style="font-size: 0.75rem; color: #6B7280;">Tiempo Completo • Híbrido</div>
-                        </div>
-                    </td>
-                    <td>CloudTech Solutions</td>
-                    <td>Puebla, México</td>
-                    <td>5 Nov 2024</td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-weight: 600; color: #1F2937;">8</span>
-                            <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
-                        </div>
-                    </td>
-                    <td><span class="badge badge-info">Borrador</span></td>
-                    <td>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-secondary btn-sm" data-tooltip="Ver Detalles">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-primary btn-sm" data-tooltip="Publicar">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                            <button class="btn btn-danger btn-sm" data-tooltip="Eliminar" onclick="confirmAction('¿Estás seguro de eliminar esta vacante?', 'deleteVacancy')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
+            {% else %}
+                <tr><td colspan="7" style="text-align:center; padding: 2rem;">
+                    <div style="text-align: center; color: #6B7280;">
+                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                        <p>No tienes vacantes registradas</p>
+                        <button class="btn btn-primary" onclick="openCreateModal()">Crear Primera Vacante</button>
+                    </div>
+                </td></tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
@@ -249,28 +158,1158 @@
     <div class="card-footer">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div style="color: #6B7280; font-size: 0.875rem;">
-                Mostrando 1-5 de 12 vacantes
+                Mostrando <span id="showingStart">1</span>-<span id="showingEnd">{{ vacantes|length }}</span> de <span id="totalVacancies">{{ vacantes|length }}</span> vacantes
             </div>
             <div style="display: flex; gap: 0.5rem;">
-                <button class="btn btn-secondary btn-sm">
+                <button class="btn btn-secondary btn-sm" onclick="previousPage()">
                     <i class="fas fa-chevron-left"></i>
                 </button>
                 <button class="btn btn-primary btn-sm">1</button>
                 <button class="btn btn-secondary btn-sm">2</button>
                 <button class="btn btn-secondary btn-sm">3</button>
-                <button class="btn btn-secondary btn-sm">
+                <button class="btn btn-secondary btn-sm" onclick="nextPage()">
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Crear Vacante -->
+<div id="createVacancyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Crear Nueva Vacante</h3>
+            <button class="modal-close" onclick="closeCreateModal()">&times;</button>
+        </div>
+        <form id="createVacancyForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Título de la Vacante *</label>
+                    <input type="text" name="titulo" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Empresa *</label>
+                    <input type="text" name="empresa" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ubicación *</label>
+                    <input type="text" name="ubicacion" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo de Trabajo *</label>
+                    <select name="job_type" class="form-select" required>
+                        <option value="">Selecciona el tipo de trabajo</option>
+                        <option value="full-time">Tiempo Completo</option>
+                        <option value="part-time">Medio Tiempo</option>
+                        <option value="contract">Por Contrato</option>
+                        <option value="internship">Prácticas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Modalidad de Trabajo *</label>
+                    <select name="work_mode" class="form-select" required>
+                        <option value="">Selecciona la modalidad</option>
+                        <option value="presencial">Presencial</option>
+                        <option value="remote">Remoto</option>
+                        <option value="hybrid">Híbrido</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nivel de Experiencia *</label>
+                    <select name="experience_level" class="form-select" required>
+                        <option value="">Selecciona el nivel</option>
+                        <option value="entry">Sin experiencia</option>
+                        <option value="junior">Junior (1-3 años)</option>
+                        <option value="mid">Mid-level (3-5 años)</option>
+                        <option value="senior">Senior (5+ años)</option>
+                        <option value="lead">Lead/Manager</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Salario Mínimo (MXN)</label>
+                    <input type="number" name="salary_min" class="form-input" placeholder="25000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Salario Máximo (MXN)</label>
+                    <input type="number" name="salary_max" class="form-input" placeholder="45000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fecha Límite de Postulación</label>
+                    <input type="date" name="deadline" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Número de Vacantes</label>
+                    <input type="number" name="vacancies_count" class="form-input" placeholder="1" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descripción del Puesto *</label>
+                    <textarea name="job_description" class="form-textarea" rows="4" placeholder="Describe las responsabilidades principales del puesto..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Requisitos *</label>
+                    <textarea name="requirements" class="form-textarea" rows="3" placeholder="Lista los requisitos mínimos para el puesto..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Beneficios</label>
+                    <textarea name="benefits" class="form-textarea" rows="3" placeholder="Describe los beneficios que ofrece la empresa..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Habilidades Requeridas</label>
+                    <input type="text" name="skills" class="form-input" placeholder="Ej: JavaScript, React, Node.js, Git">
+                    <small style="color: #6B7280; font-size: 0.75rem;">Separa las habilidades con comas</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email de Contacto *</label>
+                    <input type="email" name="contact_email" class="form-input" placeholder="hr@empresa.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono (Opcional)</label>
+                    <input type="tel" name="contact_phone" class="form-input" placeholder="+52 55 1234 5678">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Crear Vacante</button>
+                <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Editar Vacante -->
+<div id="editVacancyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Editar Vacante</h3>
+            <button class="modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+        <form id="editVacancyForm">
+            <input type="hidden" name="vacante_id" id="editVacanteId">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Título de la Vacante *</label>
+                    <input type="text" name="titulo" id="editTitulo" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Empresa *</label>
+                    <input type="text" name="empresa" id="editEmpresa" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ubicación *</label>
+                    <input type="text" name="ubicacion" id="editUbicacion" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo de Trabajo *</label>
+                    <select name="job_type" id="editJobType" class="form-select" required>
+                        <option value="">Selecciona el tipo de trabajo</option>
+                        <option value="full-time">Tiempo Completo</option>
+                        <option value="part-time">Medio Tiempo</option>
+                        <option value="contract">Por Contrato</option>
+                        <option value="internship">Prácticas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Modalidad de Trabajo *</label>
+                    <select name="work_mode" id="editWorkMode" class="form-select" required>
+                        <option value="">Selecciona la modalidad</option>
+                        <option value="presencial">Presencial</option>
+                        <option value="remote">Remoto</option>
+                        <option value="hybrid">Híbrido</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nivel de Experiencia *</label>
+                    <select name="experience_level" id="editExperienceLevel" class="form-select" required>
+                        <option value="">Selecciona el nivel</option>
+                        <option value="entry">Sin experiencia</option>
+                        <option value="junior">Junior (1-3 años)</option>
+                        <option value="mid">Mid-level (3-5 años)</option>
+                        <option value="senior">Senior (5+ años)</option>
+                        <option value="lead">Lead/Manager</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Salario Mínimo (MXN)</label>
+                    <input type="number" name="salary_min" id="editSalaryMin" class="form-input" placeholder="25000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Salario Máximo (MXN)</label>
+                    <input type="number" name="salary_max" id="editSalaryMax" class="form-input" placeholder="45000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fecha Límite de Postulación</label>
+                    <input type="date" name="deadline" id="editDeadline" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Número de Vacantes</label>
+                    <input type="number" name="vacancies_count" id="editVacanciesCount" class="form-input" placeholder="1" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descripción del Puesto *</label>
+                    <textarea name="job_description" id="editJobDescription" class="form-textarea" rows="4" placeholder="Describe las responsabilidades principales del puesto..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Requisitos *</label>
+                    <textarea name="requirements" id="editRequirements" class="form-textarea" rows="3" placeholder="Lista los requisitos mínimos para el puesto..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Beneficios</label>
+                    <textarea name="benefits" id="editBenefits" class="form-textarea" rows="3" placeholder="Describe los beneficios que ofrece la empresa..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Habilidades Requeridas</label>
+                    <input type="text" name="skills" id="editSkills" class="form-input" placeholder="Ej: JavaScript, React, Node.js, Git">
+                    <small style="color: #6B7280; font-size: 0.75rem;">Separa las habilidades con comas</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email de Contacto *</label>
+                    <input type="email" name="contact_email" id="editContactEmail" class="form-input" placeholder="hr@empresa.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono (Opcional)</label>
+                    <input type="tel" name="contact_phone" id="editContactPhone" class="form-input" placeholder="+52 55 1234 5678">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Ver Detalles -->
+<div id="viewVacancyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Detalles de la Vacante</h3>
+            <button class="modal-close" onclick="closeViewModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="vacancyDetails">
+            <!-- Los detalles se cargarán dinámicamente -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeViewModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div id="confirmModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3>Confirmar Acción</h3>
+            <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="confirmMessage">¿Estás seguro de que quieres realizar esta acción?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-danger" id="confirmButton">Confirmar</button>
+            <button class="btn btn-secondary" onclick="closeConfirmModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Notification Toast -->
+<div id="notificationToast" class="toast" style="display: none;">
+    <div class="toast-content">
+        <i class="toast-icon"></i>
+        <span class="toast-message"></span>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function deleteVacancy() {
-    showNotification('Vacante eliminada exitosamente', 'success');
+// Variables globales
+let currentVacancyId = null;
+let currentPage = 1;
+let itemsPerPage = 10;
+let filteredVacancies = [];
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    initializeFilters();
+    setupEventListeners();
+});
+
+// Configurar event listeners
+function setupEventListeners() {
+    // Búsqueda en tiempo real con debounce
+    document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 500));
+    
+    // Filtros con búsqueda inmediata
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+    document.getElementById('typeFilter').addEventListener('change', applyFilters);
+    
+    // Formularios
+    document.getElementById('createVacancyForm').addEventListener('submit', handleCreateVacancy);
+    document.getElementById('editVacancyForm').addEventListener('submit', handleEditVacancy);
+}
+
+// Funciones de filtrado
+function initializeFilters() {
+    // Guardar datos originales (solo filas con datos, no la fila vacía)
+    filteredVacancies = Array.from(document.querySelectorAll('#vacanciesTableBody tr')).filter(row => !row.querySelector('td[colspan]'));
+}
+
+async function applyFilters() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    const statusFilter = document.getElementById('statusFilter').value;
+    const typeFilter = document.getElementById('typeFilter').value;
+    
+    try {
+        const response = await fetch('/reclutador/vacantes/buscar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                search: searchTerm,
+                status: statusFilter,
+                type: typeFilter
+            })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            updateTableWithData(data);
+            updateStatsWithData(data);
+        } else {
+            const errorData = await response.json();
+            showNotification('Error en la búsqueda: ' + errorData.error, 'error');
+        }
+    } catch (error) {
+        showNotification('Error al realizar la búsqueda', 'error');
+    }
+}
+
+function updateTableWithData(data) {
+    const tbody = document.getElementById('vacanciesTableBody');
+    tbody.innerHTML = '';
+    
+    if (data.vacantes && data.vacantes.length > 0) {
+        data.vacantes.forEach(vacante => {
+            const row = createVacancyRow(vacante, data.estatus_catalogo);
+            tbody.appendChild(row);
+        });
+    } else {
+        // Mostrar mensaje de no hay resultados
+        const noResultsRow = document.createElement('tr');
+        noResultsRow.innerHTML = `
+            <td colspan="7" style="text-align:center; padding: 2rem;">
+                <div style="text-align: center; color: #6B7280;">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                    <p>No se encontraron vacantes que coincidan con tu búsqueda</p>
+                    <button class="btn btn-primary" onclick="clearFilters()">Limpiar Filtros</button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(noResultsRow);
+    }
+}
+
+function createVacancyRow(vacante, estatus_catalogo) {
+    const row = document.createElement('tr');
+    row.setAttribute('data-vacante-id', vacante[0]);
+    
+    // Crear opciones del select de estado
+    const statusOptions = estatus_catalogo.map(est => 
+        `<option value="${est[0]}" ${est[1] == vacante[6] ? 'selected' : ''}>${est[1]}</option>`
+    ).join('');
+    
+    row.innerHTML = `
+        <td>
+            <div>
+                <div style="font-weight: 600; color: #1F2937;">${vacante[1]}</div>
+                <div style="font-size: 0.75rem; color: #6B7280;">${vacante[2]}</div>
+            </div>
+        </td>
+        <td>${vacante[2]}</td>
+        <td>${vacante[3]}</td>
+        <td>${vacante[4]}</td>
+        <td>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-weight: 600; color: #1F2937;">${vacante[5]}</span>
+                <span style="font-size: 0.75rem; color: #6B7280;">postulaciones</span>
+            </div>
+        </td>
+        <td>
+            <select class="form-select" onchange="changeStatus('${vacante[0]}', this.value)" style="min-width: 120px;">
+                ${statusOptions}
+            </select>
+        </td>
+        <td>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-secondary btn-sm" onclick="viewVacancy('${vacante[0]}')" data-tooltip="Ver Detalles">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="editVacancy('${vacante[0]}')" data-tooltip="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteVacancy('${vacante[0]}')" data-tooltip="Eliminar">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </td>
+    `;
+    
+    return row;
+}
+
+function updateStatsWithData(data) {
+    // Actualizar estadísticas
+    document.querySelector('.stat-card:nth-child(1) .stat-number').textContent = data.total_vacantes;
+    document.querySelector('.stat-card:nth-child(2) .stat-number').textContent = data.vacantes_activas;
+    document.querySelector('.stat-card:nth-child(3) .stat-number').textContent = data.total_postulaciones;
+}
+
+function updateStatsAfterDelete() {
+    // Recalcular totales desde la tabla
+    const rows = Array.from(document.querySelectorAll('#vacanciesTableBody tr')).filter(row => !row.querySelector('td[colspan]'));
+    let totalVacantes = rows.length;
+    let vacantesActivas = 0;
+    let totalPostulaciones = 0;
+
+    rows.forEach(row => {
+        // Estado
+        const estadoSelect = row.querySelector('select.form-select');
+        if (estadoSelect && estadoSelect.options[estadoSelect.selectedIndex].text === 'Activa') {
+            vacantesActivas++;
+        }
+        // Postulaciones
+        const postulacionesSpan = row.querySelector('td:nth-child(5) span');
+        if (postulacionesSpan) {
+            totalPostulaciones += parseInt(postulacionesSpan.textContent) || 0;
+        }
+    });
+
+    document.querySelector('.stat-card:nth-child(1) .stat-number').textContent = totalVacantes;
+    document.querySelector('.stat-card:nth-child(2) .stat-number').textContent = vacantesActivas;
+    document.querySelector('.stat-card:nth-child(3) .stat-number').textContent = totalPostulaciones;
+}
+
+async function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('typeFilter').value = '';
+    
+    // Recargar datos originales
+    try {
+        const response = await fetch('/reclutador/vacantes/buscar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                search: '',
+                status: '',
+                type: ''
+            })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            updateTableWithData(data);
+            updateStatsWithData(data);
+        }
+    } catch (error) {
+        showNotification('Error al limpiar filtros', 'error');
+    }
+}
+
+// Funciones de modal
+function openCreateModal() {
+    document.getElementById('createVacancyModal').style.display = 'flex';
+    document.getElementById('createVacancyForm').reset();
+}
+
+function closeCreateModal() {
+    document.getElementById('createVacancyModal').style.display = 'none';
+}
+
+function openEditModal(vacanteId) {
+    currentVacancyId = vacanteId;
+    // Cargar datos de la vacante
+    loadVacancyData(vacanteId);
+    document.getElementById('editVacancyModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editVacancyModal').style.display = 'none';
+    currentVacancyId = null;
+}
+
+function openViewModal(vacanteId) {
+    currentVacancyId = vacanteId;
+    loadVacancyDetails(vacanteId);
+    document.getElementById('viewVacancyModal').style.display = 'flex';
+}
+
+function closeViewModal() {
+    document.getElementById('viewVacancyModal').style.display = 'none';
+    currentVacancyId = null;
+}
+
+function openConfirmModal(message, onConfirm) {
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmButton').onclick = onConfirm;
+    document.getElementById('confirmModal').style.display = 'flex';
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').style.display = 'none';
+}
+
+// Funciones CRUD
+async function handleCreateVacancy(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Procesar salario si existe
+    if (data.salario) {
+        const salarioParts = data.salario.split('-').map(s => s.trim());
+        data.salario_minimo = salarioParts[0] ? parseFloat(salarioParts[0].replace(/[^0-9]/g, '')) : null;
+        data.salario_maximo = salarioParts[1] ? parseFloat(salarioParts[1].replace(/[^0-9]/g, '')) : null;
+    }
+    
+    try {
+        const response = await fetch('/reclutador/vacantes/crear', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            showNotification('Vacante creada exitosamente', 'success');
+            closeCreateModal();
+            // Recargar la página para mostrar la nueva vacante
+            location.reload();
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al crear la vacante');
+        }
+    } catch (error) {
+        showNotification('Error al crear la vacante: ' + error.message, 'error');
+    }
+}
+
+async function handleEditVacancy(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Procesar salario si existe
+    if (data.salario) {
+        const salarioParts = data.salario.split('-').map(s => s.trim());
+        data.salario_minimo = salarioParts[0] ? parseFloat(salarioParts[0].replace(/[^0-9]/g, '')) : null;
+        data.salario_maximo = salarioParts[1] ? parseFloat(salarioParts[1].replace(/[^0-9]/g, '')) : null;
+    }
+    
+    try {
+        const response = await fetch(`/reclutador/vacantes/${currentVacancyId}/editar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            closeEditModal();
+            showNotification('Vacante actualizada exitosamente', 'success');
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al actualizar la vacante');
+        }
+    } catch (error) {
+        showNotification('Error al actualizar la vacante: ' + error.message, 'error');
+    }
+}
+
+async function deleteVacancy(vacanteId) {
+    openConfirmModal('¿Estás seguro de que quieres eliminar esta vacante? Esta acción no se puede deshacer.', async () => {
+        try {
+            const response = await fetch(`/reclutador/vacantes/${vacanteId}/eliminar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                showNotification(result.message || 'Vacante eliminada exitosamente', 'success');
+                closeConfirmModal();
+                
+                // Eliminar la fila de la tabla
+                const row = document.querySelector(`tr[data-vacante-id="${vacanteId}"]`);
+                if (row) {
+                    row.remove();
+                }
+                
+                // Actualizar estadísticas
+                updateStatsAfterDelete();
+                updatePagination();
+                
+                // Si no quedan vacantes, mostrar mensaje vacío
+                const tbody = document.getElementById('vacanciesTableBody');
+                if (tbody.children.length === 0) {
+                    tbody.innerHTML = `
+                        <tr><td colspan="7" style="text-align:center; padding: 2rem;">
+                            <div style="text-align: center; color: #6B7280;">
+                                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                                <p>No tienes vacantes registradas</p>
+                                <button class="btn btn-primary" onclick="openCreateModal()">Crear Primera Vacante</button>
+                            </div>
+                        </td></tr>
+                    `;
+                }
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al eliminar la vacante');
+            }
+        } catch (error) {
+            showNotification('Error al eliminar la vacante: ' + error.message, 'error');
+            closeConfirmModal();
+        }
+    });
+}
+
+async function changeStatus(vacanteId, newStatus) {
+    try {
+        const response = await fetch(`/reclutador/vacantes/${vacanteId}/cambiar-estado`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ estado: newStatus })
+        });
+        
+        if (response.ok) {
+            showNotification('Estado actualizado exitosamente', 'success');
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al cambiar el estado');
+        }
+    } catch (error) {
+        showNotification('Error al cambiar el estado: ' + error.message, 'error');
+    }
+}
+
+// Funciones auxiliares
+async function loadVacancyData(vacanteId) {
+    try {
+        const response = await fetch(`/reclutador/vacantes/${vacanteId}/datos`);
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('editTitulo').value = data.titulo;
+            document.getElementById('editEmpresa').value = data.empresa;
+            document.getElementById('editUbicacion').value = data.ubicacion;
+            
+            // Mapear tipo de trabajo
+            const tipoTrabajoMap = {
+                'Tiempo Completo': 'full-time',
+                'Medio Tiempo': 'part-time',
+                'Por Contrato': 'contract',
+                'Prácticas': 'internship'
+            };
+            document.getElementById('editJobType').value = tipoTrabajoMap[data.tipo_trabajo] || 'full-time';
+            
+            // Mapear modalidad
+            const modalidadMap = {
+                'Presencial': 'presencial',
+                'Remoto': 'remote',
+                'Híbrido': 'hybrid'
+            };
+            document.getElementById('editWorkMode').value = modalidadMap[data.modalidad] || 'presencial';
+            
+            // Mapear nivel de experiencia
+            const experienciaMap = {
+                'Sin experiencia': 'entry',
+                'Junior (1-3 años)': 'junior',
+                'Mid-level (3-5 años)': 'mid',
+                'Senior (5+ años)': 'senior',
+                'Lead/Manager': 'lead'
+            };
+            document.getElementById('editExperienceLevel').value = experienciaMap[data.nivel_experiencia] || 'entry';
+            
+            // Procesar salario
+            document.getElementById('editSalaryMin').value = data.salario_minimo || '';
+            document.getElementById('editSalaryMax').value = data.salario_maximo || '';
+            
+            // Otros campos
+            document.getElementById('editJobDescription').value = data.descripcion || '';
+            document.getElementById('editRequirements').value = data.requisitos || '';
+            document.getElementById('editBenefits').value = data.beneficios || '';
+            document.getElementById('editContactEmail').value = data.email_contacto || '';
+            document.getElementById('editContactPhone').value = data.telefono_contacto || '';
+            document.getElementById('editEstado').value = data.estado || 'Activa';
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al cargar datos');
+        }
+    } catch (error) {
+        showNotification('Error al cargar datos de la vacante: ' + error.message, 'error');
+    }
+}
+
+async function loadVacancyDetails(vacanteId) {
+    try {
+        const response = await fetch(`/reclutador/vacantes/${vacanteId}/detalles`);
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Procesar salario
+            let salario = 'No especificado';
+            if (data.salario_minimo && data.salario_maximo) {
+                salario = `$${data.salario_minimo} - $${data.salario_maximo} MXN`;
+            } else if (data.salario_minimo) {
+                salario = `$${data.salario_minimo} MXN`;
+            } else if (data.salario_maximo) {
+                salario = `$${data.salario_maximo} MXN`;
+            }
+            
+            // Procesar fecha límite
+            let fechaLimite = '';
+            if (data.fecha_limite) {
+                fechaLimite = `<div class="detail-group">
+                    <label><strong>Fecha Límite:</strong></label>
+                    <p>${data.fecha_limite}</p>
+                </div>`;
+            }
+            
+            document.getElementById('vacancyDetails').innerHTML = `
+                <div class="vacancy-details">
+                    <div class="detail-group">
+                        <label><strong>Título:</strong></label>
+                        <p>${data.titulo}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Empresa:</strong></label>
+                        <p>${data.empresa}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Ubicación:</strong></label>
+                        <p>${data.ubicacion}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Tipo de Trabajo:</strong></label>
+                        <p>${data.tipo_trabajo || 'No especificado'}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Modalidad:</strong></label>
+                        <p>${data.modalidad || 'No especificado'}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Nivel de Experiencia:</strong></label>
+                        <p>${data.nivel_experiencia || 'No especificado'}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Salario:</strong></label>
+                        <p>${salario}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Habilidades Requeridas:</strong></label>
+                        <p>${(data.habilidades_requeridas && data.habilidades_requeridas.length > 0) ? data.habilidades_requeridas.join(', ') : 'Sin habilidades requeridas'}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Estado:</strong></label>
+                        <p><span class="badge badge-${getStatusBadgeClass(data.estado)}">${data.estado}</span></p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Descripción:</strong></label>
+                        <p>${data.descripcion || 'Sin descripción'}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Requisitos:</strong></label>
+                        <p>${data.requisitos || 'Sin requisitos especificados'}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Beneficios:</strong></label>
+                        <p>${data.beneficios || 'Sin beneficios especificados'}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Fecha de Creación:</strong></label>
+                        <p>${data.fecha_creacion}</p>
+                    </div>
+                    <div class="detail-group">
+                        <label><strong>Número de Vacantes:</strong></label>
+                        <p>${data.numero_vacantes || 1}</p>
+                    </div>
+                    ${fechaLimite}
+                    <div class="detail-group">
+                        <label><strong>Postulaciones:</strong></label>
+                        <p>${data.postulaciones || 0} candidatos</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error al cargar detalles');
+        }
+    } catch (error) {
+        showNotification('Error al cargar detalles de la vacante: ' + error.message, 'error');
+    }
+}
+
+function updateTableRow(vacanteId, data) {
+    const row = document.querySelector(`tr[data-vacante-id="${vacanteId}"]`);
+    if (row) {
+        row.cells[0].innerHTML = `
+            <div>
+                <div style="font-weight: 600; color: #1F2937;">${data.titulo}</div>
+                <div style="font-size: 0.75rem; color: #6B7280;">${data.empresa}</div>
+            </div>
+        `;
+        row.cells[1].textContent = data.empresa;
+        row.cells[2].textContent = data.ubicacion;
+        
+        // Actualizar estado si existe
+        const estadoSelect = row.cells[5].querySelector('select');
+        if (estadoSelect && data.estado) {
+            estadoSelect.value = data.estado;
+        }
+    }
+}
+
+function getStatusBadgeClass(status) {
+    switch(status) {
+        case 'Activa': return 'success';
+        case 'Cerrada': return 'danger';
+        case 'Borrador': return 'warning';
+        default: return 'info';
+    }
+}
+
+// Funciones de vista
+function toggleView() {
+    const icon = document.getElementById('viewIcon');
+    const tableContainer = document.getElementById('tableView');
+    
+    if (icon.classList.contains('fa-th-large')) {
+        icon.classList.remove('fa-th-large');
+        icon.classList.add('fa-list');
+        tableContainer.style.display = 'none';
+        // Aquí podrías mostrar una vista de grilla
+    } else {
+        icon.classList.remove('fa-list');
+        icon.classList.add('fa-th-large');
+        tableContainer.style.display = 'block';
+    }
+}
+
+function exportVacancies() {
+    // Implementar exportación a CSV/Excel
+    showNotification('Función de exportación en desarrollo', 'info');
+}
+
+// Funciones de paginación
+function updatePagination() {
+    const visibleRows = Array.from(document.querySelectorAll('#vacanciesTableBody tr')).filter(row => 
+        row.style.display !== 'none' && !row.querySelector('td[colspan]')
+    );
+    
+    const total = visibleRows.length;
+    const start = (currentPage - 1) * itemsPerPage + 1;
+    const end = Math.min(currentPage * itemsPerPage, total);
+    
+    document.getElementById('showingStart').textContent = start;
+    document.getElementById('showingEnd').textContent = end;
+    document.getElementById('totalVacancies').textContent = total;
+}
+
+function previousPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        updatePagination();
+    }
+}
+
+function nextPage() {
+    const visibleRows = Array.from(document.querySelectorAll('#vacanciesTableBody tr')).filter(row => 
+        row.style.display !== 'none' && !row.querySelector('td[colspan]')
+    );
+    const totalPages = Math.ceil(visibleRows.length / itemsPerPage);
+    if (currentPage < totalPages) {
+        currentPage++;
+        updatePagination();
+    }
+}
+
+// Funciones de utilidad
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function showNotification(message, type = 'info') {
+    const toast = document.getElementById('notificationToast');
+    const messageEl = toast.querySelector('.toast-message');
+    const iconEl = toast.querySelector('.toast-icon');
+    
+    messageEl.textContent = message;
+    
+    // Configurar icono y clase según el tipo
+    toast.className = `toast toast-${type}`;
+    iconEl.className = `fas ${getNotificationIcon(type)}`;
+    
+    toast.style.display = 'block';
+    
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+function getNotificationIcon(type) {
+    switch(type) {
+        case 'success': return 'fa-check-circle';
+        case 'error': return 'fa-exclamation-circle';
+        case 'warning': return 'fa-exclamation-triangle';
+        default: return 'fa-info-circle';
+    }
+}
+
+// Funciones de ordenamiento
+function sortTable(columnIndex) {
+    const table = document.getElementById('vacanciesTable');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => !row.querySelector('td[colspan]'));
+    
+    rows.sort((a, b) => {
+        let aValue, bValue;
+        
+        if (columnIndex === 0) {
+            // Para el título, obtener el texto del primer div
+            const aTitleDiv = a.cells[columnIndex].querySelector('div > div');
+            const bTitleDiv = b.cells[columnIndex].querySelector('div > div');
+            aValue = aTitleDiv ? aTitleDiv.textContent.trim() : '';
+            bValue = bTitleDiv ? bTitleDiv.textContent.trim() : '';
+        } else if (columnIndex === 4) {
+            // Para postulaciones, obtener el número
+            const aPostDiv = a.cells[columnIndex].querySelector('span');
+            const bPostDiv = b.cells[columnIndex].querySelector('span');
+            aValue = aPostDiv ? aPostDiv.textContent.trim() : '0';
+            bValue = bPostDiv ? bPostDiv.textContent.trim() : '0';
+        } else {
+            aValue = a.cells[columnIndex].textContent.trim();
+            bValue = b.cells[columnIndex].textContent.trim();
+        }
+        
+        if (columnIndex === 3) { // Fecha
+            return new Date(aValue) - new Date(bValue);
+        } else if (columnIndex === 4) { // Número
+            return parseInt(aValue) - parseInt(bValue);
+        } else {
+            return aValue.localeCompare(bValue);
+        }
+    });
+    
+    // Reordenar filas
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+// Funciones de navegación
+function viewVacancy(vacanteId) {
+    openViewModal(vacanteId);
+}
+
+function editVacancy(vacanteId) {
+    openEditModal(vacanteId);
+}
+
+function editFromView() {
+    closeViewModal();
+    editVacancy(currentVacancyId);
 }
 </script>
-{% endblock %} 
+
+<style>
+/* Estilos para modales */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #E5E7EB;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1F2937;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6B7280;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+/* Estilos para notificaciones */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    z-index: 10000;
+    min-width: 300px;
+    border-left: 4px solid #3B82F6;
+}
+
+.toast-success {
+    border-left-color: #10B981;
+}
+
+.toast-error {
+    border-left-color: #EF4444;
+}
+
+.toast-warning {
+    border-left-color: #F59E0B;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.toast-icon {
+    font-size: 1.25rem;
+}
+
+.toast-success .toast-icon {
+    color: #10B981;
+}
+
+.toast-error .toast-icon {
+    color: #EF4444;
+}
+
+.toast-warning .toast-icon {
+    color: #F59E0B;
+}
+
+.toast-message {
+    color: #374151;
+    font-weight: 500;
+}
+
+/* Estilos para detalles de vacante */
+.vacancy-details {
+    display: grid;
+    gap: 1rem;
+}
+
+.detail-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-group label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+}
+
+.detail-group p {
+    margin: 0;
+    color: #6B7280;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95vw;
+        margin: 1rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-footer {
+        padding: 1rem;
+        flex-direction: column;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
