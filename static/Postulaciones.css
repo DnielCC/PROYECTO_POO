@@ -339,4 +339,65 @@
     .application-card {
         padding: 1rem;
     }
+}
+
+/* Estilos adicionales para funcionalidades dinámicas */
+.btn-cancelar {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-cancelar:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+/* Estilos para estados de postulación */
+.status-badge.pendiente {
+    background: #ffc107;
+    color: #212529;
+}
+
+.status-badge.revisando {
+    background: #17a2b8;
+    color: white;
+}
+
+.status-badge.aceptada {
+    background: #28a745;
+    color: white;
+}
+
+.status-badge.rechazada {
+    background: #dc3545;
+    color: white;
+}
+
+.status-badge.cancelada {
+    background: #6c757d;
+    color: white;
+}
+
+/* Animación para nuevas postulaciones */
+.postulacion-card {
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 } 
