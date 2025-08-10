@@ -1,6 +1,6 @@
 create database bolsa_trabajo_1;
 use bolsa_trabajo_1;
-drop database bolsa_trabajo_1;
+
 
 create table estatus(
 	id int auto_increment,
@@ -29,7 +29,10 @@ create table login(
 
 insert into login(correo, contra, username ,tipo_usuario)
 values
-('admin@workfy.com', '123456789', 'Administrador01','admin');
+('admin@workfy.com', '123456789', 'Administrador prueba','admin'),
+('reclutador@workfy.com', '123456789', 'Reclutador prueba','reclutador'),
+('usuario@workfy.com', '123456789', 'Usuario prueba','aspirante');
+
 
 
 create table empleos( -- Catalogo
@@ -257,6 +260,7 @@ CREATE TABLE postulaciones (
     id_usuario int,
     id_vacante int,
     id_estatus int default 4,
+    fecha_postulacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (id_usuario) references login(id),
     FOREIGN KEY (id_vacante) REFERENCES vacantes(id),
