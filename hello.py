@@ -153,7 +153,44 @@ def info():
 
 @app.route('/inicio/usuarios')
 def inicio_usuarios():
-    return render_template('inicio_usuarios.html')
+    # Obtener todas las vacantes activas de la base de datos
+    query_vacantes = """
+        SELECT v.id, v.titulo, e.nombre as empresa, 
+               CONCAT(u.ciudad, ', ', u.estado, ', ', u.pais) as ubicacion,
+               tt.nombre as tipo_contrato, v.descripcion, 
+               v.salario_minimo, v.salario_maximo, mt.nombre as modalidad,
+               es.estatus as estado, v.fecha_publicacion
+        FROM vacantes v
+        INNER JOIN empresas e ON v.id_empresa = e.id
+        INNER JOIN ubicaciones u ON v.id_ubicacion = u.id
+        INNER JOIN tipos_trabajo tt ON v.id_tipo_trabajo = tt.id
+        INNER JOIN modalidades_trabajo mt ON v.id_modalidad_trabajo = mt.id
+        LEFT JOIN estado_vacantes ev ON v.id = ev.id_vacante
+        LEFT JOIN estatus es ON ev.id_estatus = es.id
+        WHERE es.estatus = 'Activa' OR es.estatus IS NULL
+        ORDER BY v.fecha_publicacion DESC
+    """
+    
+    vacantes = conexion.get_datos(query_vacantes)
+    
+    # Formatear las vacantes para el template
+    vacantes_formateadas = []
+    for vacante in vacantes:
+        vacantes_formateadas.append({
+            'id': vacante[0],
+            'titulo': vacante[1],
+            'empresa': vacante[2],
+            'ubicacion': vacante[3],
+            'tipo_contrato': vacante[4],
+            'descripcion': vacante[5],
+            'salario_min': vacante[6],
+            'salario_max': vacante[7],
+            'modalidad': vacante[8],
+            'estado': vacante[9],
+            'fecha_creacion': vacante[10]
+        })
+    
+    return render_template('inicio_usuarios.html', vacantes=vacantes_formateadas)
 
 
 @app.route('/user/perfil')
@@ -201,7 +238,138 @@ def mis_postulaciones():
         flash('Debes iniciar sesión para continuar.', 'error')
         return redirect(url_for('user_login'))
     
-    return render_template('mis_postulaciones.html')
+    user_id = session['user_id']
+    
+    # Obtener las postulaciones del usuario con información completa
+    query_postulaciones = """
+        SELECT p.id, p.fecha_postulacion, es.estatus as estado, p.fecha_postulacion as fecha_actualizacion,
+               v.titulo, e.nombre as empresa, 
+               CONCAT(u.ciudad, ', ', u.estado, ', ', u.pais) as ubicacion,
+               v.salario_minimo, v.salario_maximo, 
+               mt.nombre as modalidad, tt.nombre as tipo_contrato
+        FROM postulaciones p
+        INNER JOIN vacantes v ON p.id_vacante = v.id
+        INNER JOIN empresas e ON v.id_empresa = e.id
+        INNER JOIN ubicaciones u ON v.id_ubicacion = u.id
+        INNER JOIN modalidades_trabajo mt ON v.id_modalidad_trabajo = mt.id
+        INNER JOIN tipos_trabajo tt ON v.id_tipo_trabajo = tt.id
+        INNER JOIN estatus es ON p.id_estatus = es.id
+        WHERE p.id_usuario = %s
+        ORDER BY p.fecha_postulacion DESC
+    """
+    
+    postulaciones = conexion.get_datos_parametrizados(query_postulaciones, (user_id,))
+    
+    # Formatear las postulaciones para el template
+    postulaciones_formateadas = []
+    for postulacion in postulaciones:
+        postulaciones_formateadas.append({
+            'id': postulacion[0],
+            'fecha_postulacion': postulacion[1],
+            'estado': postulacion[2],
+            'fecha_actualizacion': postulacion[3],
+            'titulo': postulacion[4],
+            'empresa': postulacion[5],
+            'ubicacion': postulacion[6],
+            'salario_min': postulacion[7],
+            'salario_max': postulacion[8],
+            'modalidad': postulacion[9],
+            'tipo_contrato': postulacion[10]
+        })
+    
+    return render_template('mis_postulaciones.html', postulaciones=postulaciones_formateadas)
+
+@app.route('/aplicar_vacante', methods=['POST'])
+def aplicar_vacante():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Debes iniciar sesión para continuar'})
+    
+    user_id = session['user_id']
+    vacante_id = request.form.get('vacante_id')
+    
+    if not vacante_id:
+        return jsonify({'success': False, 'message': 'ID de vacante no proporcionado'})
+    
+    # Verificar si ya se postuló a esta vacante
+    query_verificar = "SELECT id FROM postulaciones WHERE id_usuario = %s AND id_vacante = %s"
+    postulacion_existente = conexion.get_datos_parametrizados(query_verificar, (user_id, vacante_id))
+    
+    if postulacion_existente:
+        return jsonify({'success': False, 'message': 'Ya te has postulado a esta vacante'})
+    
+    # Crear la postulación (usando la estructura correcta de la tabla)
+    query_insertar = """
+        INSERT INTO postulaciones (id_usuario, id_vacante, id_estatus, fecha_postulacion)
+        VALUES (%s, %s, 4, NOW())
+    """
+    
+    resultado = conexion.insert_datos_parametrizados(query_insertar, (user_id, vacante_id))
+    
+    if resultado == 'ok':
+        return jsonify({'success': True, 'message': 'Postulación enviada exitosamente'})
+    else:
+        return jsonify({'success': False, 'message': 'Error al enviar la postulación'})
+
+@app.route('/cancelar_postulacion', methods=['POST'])
+def cancelar_postulacion():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Debes iniciar sesión para continuar'})
+    
+    user_id = session['user_id']
+    postulacion_id = request.form.get('postulacion_id')
+    
+    if not postulacion_id:
+        return jsonify({'success': False, 'message': 'ID de postulación no proporcionado'})
+    
+    # Verificar que la postulación pertenece al usuario y está en estado pendiente (id_estatus = 4)
+    query_verificar = "SELECT id FROM postulaciones WHERE id = %s AND id_usuario = %s AND id_estatus = 4"
+    postulacion_existente = conexion.get_datos_parametrizados(query_verificar, (postulacion_id, user_id))
+    
+    if not postulacion_existente:
+        return jsonify({'success': False, 'message': 'Postulación no encontrada o no se puede cancelar'})
+    
+    # Cambiar el estado a cancelada (id_estatus = 6 para Rechazado)
+    query_actualizar = "UPDATE postulaciones SET id_estatus = 6 WHERE id = %s"
+    resultado = conexion.update_datos_parametrizados(query_actualizar, (postulacion_id,))
+    
+    if resultado.startswith('Registros actualizados'):
+        return jsonify({'success': True, 'message': 'Postulación cancelada exitosamente'})
+    else:
+        return jsonify({'success': False, 'message': 'Error al cancelar la postulación'})
+
+@app.route('/calificar_vacante', methods=['POST'])
+def calificar_vacante():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Debes iniciar sesión para continuar'})
+    
+    user_id = session['user_id']
+    data = request.get_json()
+    vacante_id = data.get('vacante_id')
+    calificacion = data.get('calificacion')
+    
+    if not vacante_id or not calificacion:
+        return jsonify({'success': False, 'message': 'Datos incompletos'})
+    
+    if calificacion < 1 or calificacion > 5:
+        return jsonify({'success': False, 'message': 'Calificación inválida'})
+    
+    # Verificar si ya calificó esta vacante
+    query_verificar = "SELECT id FROM calificaciones_vacantes WHERE id_usuario = %s AND id_vacante = %s"
+    calificacion_existente = conexion.get_datos_parametrizados(query_verificar, (user_id, vacante_id))
+    
+    if calificacion_existente:
+        # Actualizar calificación existente
+        query_actualizar = "UPDATE calificaciones_vacantes SET calificacion = %s, fecha_calificacion = NOW() WHERE id_usuario = %s AND id_vacante = %s"
+        resultado = conexion.update_datos_parametrizados(query_actualizar, (calificacion, user_id, vacante_id))
+    else:
+        # Insertar nueva calificación
+        query_insertar = "INSERT INTO calificaciones_vacantes (id_usuario, id_vacante, calificacion, fecha_calificacion) VALUES (%s, %s, %s, NOW())"
+        resultado = conexion.insert_datos_parametrizados(query_insertar, (user_id, vacante_id, calificacion))
+    
+    if resultado:
+        return jsonify({'success': True, 'message': 'Calificación enviada exitosamente'})
+    else:
+        return jsonify({'success': False, 'message': 'Error al enviar la calificación'})
 
 #----------END RUTA DE INFORMACIÓN DEL USUARIO ----------
 

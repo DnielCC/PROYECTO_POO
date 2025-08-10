@@ -45,7 +45,7 @@
                 <!-- Campo Correo -->
                 <div class="form-group">
                     <label class="form-label" for="email">Correo</label>
-                    {{ form.Email(class="form-input", placeholder="ejemplo@correo.com" ,maxlength="50") }}
+                    {{ form.Email(class="form-input", placeholder="ejemplo@correo.com") }}
                     {% for error in form.Email.errors %}
                     <span class="error-message">{{ error }}</span>
                     {% endfor %}
