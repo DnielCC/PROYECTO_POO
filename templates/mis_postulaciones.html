@@ -4,280 +4,168 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Postulaciones - Workify</title>
-    <link rel="stylesheet" href="{{url_for('static',filename='Inicio_usuarios.css')}}">
-    <link rel="stylesheet" href="{{url_for('static',filename='Postulaciones.css')}}">
-    <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='Postulaciones.css') }}">
 </head>
 <body>
+    <!-- Incluir el navbar -->
     {% include 'components/navbar_usuarios.html' %}
 
-    <!-- Contenido principal -->
-    <div class="main-content">
-        <!-- Header de la página -->
-        <div class="page-header">
-            <h1 class="page-title">Mis Postulaciones</h1>
-            <p class="page-subtitle">Revisa el estado de todas tus aplicaciones laborales</p>
+    <div class="container">
+        <div class="header">
+            <h1>Mis Postulaciones</h1>
+            <p>Revisa el estado de todas tus postulaciones a vacantes</p>
         </div>
 
-        <!-- Estadísticas rápidas -->
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-number">8</span>
-                    <span class="stat-label">En revisión</span>
-                </div>
+        <div class="filters">
+            <div class="filter-group">
+                <label for="status-filter">Filtrar por estado:</label>
+                <select id="status-filter">
+                    <option value="todos">Todas las postulaciones</option>
+                    <option value="pendiente">Pendiente de revisión</option>
+                    <option value="revisando">En revisión</option>
+                    <option value="aceptada">Aceptada</option>
+                    <option value="rechazada">Rechazada</option>
+                </select>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon accepted">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-number">3</span>
-                    <span class="stat-label">Aceptadas</span>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon rejected">
-                    <i class="fas fa-times-circle"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-number">2</span>
-                    <span class="stat-label">Rechazadas</span>
-                </div>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Buscar por empresa o puesto...">
+                <button type="button" id="search-btn">
+                    <i class="search-icon">🔍</i>
+                </button>
             </div>
         </div>
 
-        <!-- Lista de postulaciones -->
-        <div class="applications-container">
-            <!-- Postulación 1 -->
-            <div class="application-card">
-                <div class="application-header">
-                    <div class="job-info">
-                        <h3 class="job-title">Desarrollador Frontend</h3>
-                        <div class="company-info">
-                            <i class="fas fa-building"></i>
-                            <span>TechCorp Solutions</span>
-                        </div>
-                        <div class="location-info">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Querétaro, México</span>
+        <div class="postulaciones-container">
+            <!-- Ejemplo de postulación -->
+            <div class="postulacion-card" data-status="pendiente">
+                <div class="postulacion-header">
+                    <div class="empresa-info">
+                        <img src="{{ url_for('static', filename='images/avatar.png') }}" alt="Logo empresa" class="empresa-logo">
+                        <div class="empresa-details">
+                            <h3>Desarrollador Full Stack</h3>
+                            <p class="empresa-nombre">Tech Solutions S.A.</p>
+                            <p class="ubicacion">📍 Ciudad de México, CDMX</p>
                         </div>
                     </div>
-                    <div class="status-badge reviewing">
-                        <i class="fas fa-clock"></i>
-                        <span>En revisión</span>
+                    <div class="status-badge pendiente">Pendiente</div>
+                </div>
+                
+                <div class="postulacion-details">
+                    <div class="detail-row">
+                        <span class="label">Salario:</span>
+                        <span class="value">$25,000 - $35,000 MXN</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Modalidad:</span>
+                        <span class="value">Híbrida</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Fecha de postulación:</span>
+                        <span class="value">15 de Noviembre, 2024</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Última actualización:</span>
+                        <span class="value">Hace 2 días</span>
                     </div>
                 </div>
-                <div class="application-details">
-                    <div class="application-date">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Aplicado el 15 de Noviembre, 2024</span>
-                    </div>
-                    <div class="application-actions">
-                        <button class="btn-view">
-                            <i class="fas fa-eye"></i>
-                            Ver detalles
-                        </button>
-                        <button class="btn-withdraw">
-                            <i class="fas fa-times"></i>
-                            Retirar
-                        </button>
-                    </div>
+
+                <div class="postulacion-actions">
+                    <button class="btn-ver-detalles">Ver Detalles</button>
+                    <button class="btn-cancelar">Cancelar Postulación</button>
                 </div>
             </div>
 
-            <!-- Postulación 2 -->
-            <div class="application-card">
-                <div class="application-header">
-                    <div class="job-info">
-                        <h3 class="job-title">Diseñador UX/UI</h3>
-                        <div class="company-info">
-                            <i class="fas fa-building"></i>
-                            <span>Creative Studio</span>
-                        </div>
-                        <div class="location-info">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Remoto</span>
+            <!-- Otra postulación de ejemplo -->
+            <div class="postulacion-card" data-status="revisando">
+                <div class="postulacion-header">
+                    <div class="empresa-info">
+                        <img src="{{ url_for('static', filename='images/avatar.png') }}" alt="Logo empresa" class="empresa-logo">
+                        <div class="empresa-details">
+                            <h3>Analista de Datos</h3>
+                            <p class="empresa-nombre">Data Analytics Corp</p>
+                            <p class="ubicacion">📍 Guadalajara, Jalisco</p>
                         </div>
                     </div>
-                    <div class="status-badge accepted">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Aceptado</span>
+                    <div class="status-badge revisando">En Revisión</div>
+                </div>
+                
+                <div class="postulacion-details">
+                    <div class="detail-row">
+                        <span class="label">Salario:</span>
+                        <span class="value">$18,000 - $25,000 MXN</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Modalidad:</span>
+                        <span class="value">Remota</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Fecha de postulación:</span>
+                        <span class="value">10 de Noviembre, 2024</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Última actualización:</span>
+                        <span class="value">Hace 1 semana</span>
                     </div>
                 </div>
-                <div class="application-details">
-                    <div class="application-date">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Aplicado el 10 de Noviembre, 2024</span>
-                    </div>
-                    <div class="application-actions">
-                        <button class="btn-view">
-                            <i class="fas fa-eye"></i>
-                            Ver detalles
-                        </button>
-                        <button class="btn-contact">
-                            <i class="fas fa-envelope"></i>
-                            Contactar
-                        </button>
-                    </div>
+
+                <div class="postulacion-actions">
+                    <button class="btn-ver-detalles">Ver Detalles</button>
+                    <button class="btn-cancelar">Cancelar Postulación</button>
                 </div>
             </div>
 
-            <!-- Postulación 3 -->
-            <div class="application-card">
-                <div class="application-header">
-                    <div class="job-info">
-                        <h3 class="job-title">Analista de Datos</h3>
-                        <div class="company-info">
-                            <i class="fas fa-building"></i>
-                            <span>Data Insights</span>
-                        </div>
-                        <div class="location-info">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Monterrey, México</span>
+            <!-- Postulación aceptada -->
+            <div class="postulacion-card" data-status="aceptada">
+                <div class="postulacion-header">
+                    <div class="empresa-info">
+                        <img src="{{ url_for('static', filename='images/avatar.png') }}" alt="Logo empresa" class="empresa-logo">
+                        <div class="empresa-details">
+                            <h3>Diseñador UX/UI</h3>
+                            <p class="empresa-nombre">Creative Design Studio</p>
+                            <p class="ubicacion">📍 Monterrey, Nuevo León</p>
                         </div>
                     </div>
-                    <div class="status-badge rejected">
-                        <i class="fas fa-times-circle"></i>
-                        <span>Rechazado</span>
+                    <div class="status-badge aceptada">¡Aceptada!</div>
+                </div>
+                
+                <div class="postulacion-details">
+                    <div class="detail-row">
+                        <span class="label">Salario:</span>
+                        <span class="value">$22,000 - $30,000 MXN</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Modalidad:</span>
+                        <span class="value">Presencial</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Fecha de postulación:</span>
+                        <span class="value">5 de Noviembre, 2024</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Fecha de aceptación:</span>
+                        <span class="value">12 de Noviembre, 2024</span>
                     </div>
                 </div>
-                <div class="application-details">
-                    <div class="application-date">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Aplicado el 5 de Noviembre, 2024</span>
-                    </div>
-                    <div class="application-actions">
-                        <button class="btn-view">
-                            <i class="fas fa-eye"></i>
-                            Ver detalles
-                        </button>
-                        <button class="btn-feedback">
-                            <i class="fas fa-comment"></i>
-                            Solicitar feedback
-                        </button>
-                    </div>
+
+                <div class="postulacion-actions">
+                    <button class="btn-ver-detalles">Ver Detalles</button>
+                    <button class="btn-contactar">Contactar Empresa</button>
                 </div>
             </div>
+        </div>
 
-            <!-- Postulación 4 -->
-            <div class="application-card">
-                <div class="application-header">
-                    <div class="job-info">
-                        <h3 class="job-title">Project Manager</h3>
-                        <div class="company-info">
-                            <i class="fas fa-building"></i>
-                            <span>Innovation Labs</span>
-                        </div>
-                        <div class="location-info">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>CDMX, México</span>
-                        </div>
-                    </div>
-                    <div class="status-badge reviewing">
-                        <i class="fas fa-clock"></i>
-                        <span>En revisión</span>
-                    </div>
-                </div>
-                <div class="application-details">
-                    <div class="application-date">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Aplicado el 12 de Noviembre, 2024</span>
-                    </div>
-                    <div class="application-actions">
-                        <button class="btn-view">
-                            <i class="fas fa-eye"></i>
-                            Ver detalles
-                        </button>
-                        <button class="btn-withdraw">
-                            <i class="fas fa-times"></i>
-                            Retirar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Postulación 5 -->
-            <div class="application-card">
-                <div class="application-header">
-                    <div class="job-info">
-                        <h3 class="job-title">DevOps Engineer</h3>
-                        <div class="company-info">
-                            <i class="fas fa-building"></i>
-                            <span>Cloud Systems</span>
-                        </div>
-                        <div class="location-info">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Remoto</span>
-                        </div>
-                    </div>
-                    <div class="status-badge accepted">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Aceptado</span>
-                    </div>
-                </div>
-                <div class="application-details">
-                    <div class="application-date">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Aplicado el 8 de Noviembre, 2024</span>
-                    </div>
-                    <div class="application-actions">
-                        <button class="btn-view">
-                            <i class="fas fa-eye"></i>
-                            Ver detalles
-                        </button>
-                        <button class="btn-contact">
-                            <i class="fas fa-envelope"></i>
-                            Contactar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Postulación 6 -->
-            <div class="application-card">
-                <div class="application-header">
-                    <div class="job-info">
-                        <h3 class="job-title">Desarrollador Backend</h3>
-                        <div class="company-info">
-                            <i class="fas fa-building"></i>
-                            <span>WebTech Solutions</span>
-                        </div>
-                        <div class="location-info">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Guadalajara, México</span>
-                        </div>
-                    </div>
-                    <div class="status-badge reviewing">
-                        <i class="fas fa-clock"></i>
-                        <span>En revisión</span>
-                    </div>
-                </div>
-                <div class="application-details">
-                    <div class="application-date">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Aplicado el 14 de Noviembre, 2024</span>
-                    </div>
-                    <div class="application-actions">
-                        <button class="btn-view">
-                            <i class="fas fa-eye"></i>
-                            Ver detalles
-                        </button>
-                        <button class="btn-withdraw">
-                            <i class="fas fa-times"></i>
-                            Retirar
-                        </button>
-                    </div>
-                </div>
+        <!-- Mensaje cuando no hay postulaciones -->
+        <div class="no-postulaciones" style="display: none;">
+            <div class="empty-state">
+                <img src="{{ url_for('static', filename='images/avatar.png') }}" alt="Sin postulaciones" class="empty-icon">
+                <h3>No tienes postulaciones aún</h3>
+                <p>Explora las vacantes disponibles y comienza a postularte</p>
+                <a href="{{ url_for('inicio_usuarios') }}" class="btn-explorar">Explorar Vacantes</a>
             </div>
         </div>
     </div>
-    
-    <!-- Script para la navbar -->
-    <script src="{{ url_for('static', filename='navbar.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html> 

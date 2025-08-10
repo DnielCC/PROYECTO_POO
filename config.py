@@ -8,8 +8,8 @@ class ConexionDB():
             self.connection = mysql.connector.connect(
                 host='localhost',
                 user='root',
-                password='garcia01', #Agregar password 
-                database='bolsa_trabajo_1')
+                password='123456789', #Agregar password 
+                database='bolsa_trabajo_2')
             self.cursor = self.connection.cursor()
             self.errMss = ''
         except Exception as ex:
