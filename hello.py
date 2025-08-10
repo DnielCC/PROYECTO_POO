@@ -208,14 +208,49 @@ def mis_postulaciones():
 #----------ADMIN DASHBOARD----------
 @app.route('/admin/dashboard')
 def admin_dashboard():
-    query = """
+    print("DEBUG: Iniciando admin_dashboard")
+    
+    # Obtener usuarios admin y reclutadores
+    query_usuarios = """
         SELECT 
             id, correo, tipo_usuario, username
         FROM login
         WHERE tipo_usuario IN ('admin', 'reclutador')
     """
-    usuarios = conexion.get_datos(query)
-    return render_template('dashboard_admin.html', usuarios=usuarios)
+    print(f"DEBUG: Ejecutando query usuarios: {query_usuarios}")
+    usuarios = conexion.get_datos(query_usuarios)
+    print(f"DEBUG: Usuarios encontrados: {usuarios}")
+    print(f"DEBUG: Tipo de usuarios: {type(usuarios)}")
+    print(f"DEBUG: Longitud de usuarios: {len(usuarios) if usuarios else 0}")
+    
+    # Obtener aspirantes con su información
+    query_aspirantes = """
+        SELECT 
+            i.id_usuario,
+            i.nombre,
+            i.apellidos,
+            l.correo,
+            COALESCE(e.empleo, 'No especificado') as empleo_deseado,
+            COALESCE(exp.experiencia, 'No especificado') as experiencia,
+            COALESCE(g.grado, 'No especificado') as grado_estudios,
+            COALESCE(c.ciudad, 'No especificado') as ciudad
+        FROM informacion i
+        INNER JOIN login l ON i.id_usuario = l.id
+        LEFT JOIN empleos e ON i.id_empleos = e.id
+        LEFT JOIN experiencia exp ON i.id_experiencia = exp.id
+        LEFT JOIN grado_estudios g ON i.id_grado_estudios = g.id
+        LEFT JOIN ciudad_referencia c ON i.id_ciudad = c.id
+        WHERE l.tipo_usuario = 'aspirante'
+        ORDER BY i.nombre, i.apellidos
+    """
+    print(f"DEBUG: Ejecutando query aspirantes: {query_aspirantes}")
+    aspirantes = conexion.get_datos(query_aspirantes)
+    print(f"DEBUG: Aspirantes encontrados: {aspirantes}")
+    print(f"DEBUG: Tipo de aspirantes: {type(aspirantes)}")
+    print(f"DEBUG: Longitud de aspirantes: {len(aspirantes) if aspirantes else 0}")
+    
+    print(f"DEBUG: Renderizando template con usuarios={usuarios} y aspirantes={aspirantes}")
+    return render_template('dashboard_admin.html', usuarios=usuarios, aspirantes=aspirantes)
 
 @app.route('/admin/agregar_usuario', methods=['POST'])
 def agregar_usuario():
@@ -266,6 +301,48 @@ def editar_usuario(id):
         flash('Usuario editado correctamente.', 'success')
     else:
         flash('Solo puedes editar administradores o reclutadores.', 'error')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/editar_aspirante/<int:id>', methods=['POST'])
+def editar_aspirante(id):
+    nombre = request.form['nombre']
+    apellidos = request.form['apellidos']
+    correo = request.form['correo']
+    empleo_deseado = request.form['empleo_deseado']
+    experiencia = request.form['experiencia']
+    grado_estudios = request.form['grado_estudios']
+    ciudad = request.form['ciudad']
+    
+    try:
+        # Actualizar correo en tabla login
+        update_login = f"UPDATE login SET correo='{correo}' WHERE id={id}"
+        conexion.insert_datos(update_login)
+        
+        # Actualizar información en tabla informacion
+        update_info = f"""
+            UPDATE informacion 
+            SET nombre='{nombre}', apellidos='{apellidos}'
+            WHERE id_usuario={id}
+        """
+        conexion.insert_datos(update_info)
+        
+        flash('Aspirante editado correctamente.', 'success')
+    except Exception as e:
+        flash(f'Error al editar aspirante: {e}', 'error')
+    
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/eliminar_aspirante/<int:id>', methods=['POST'])
+def eliminar_aspirante(id):
+    try:
+        # Eliminar de informacion primero (por foreign key)
+        conexion.insert_datos(f"DELETE FROM informacion WHERE id_usuario={id}")
+        # Luego eliminar de login
+        conexion.insert_datos(f"DELETE FROM login WHERE id={id}")
+        flash('Aspirante eliminado correctamente.', 'success')
+    except Exception as e:
+        flash(f'Error al eliminar aspirante: {e}', 'error')
+    
     return redirect(url_for('admin_dashboard'))
 #----------END ADMIN DASHBOARD----------
 
@@ -318,15 +395,217 @@ def reclutador_vacantes():
                          total_postulaciones=total_postulaciones,
                          promedio_postulaciones=promedio_postulaciones)
 
+
 @app.route('/reclutador/postulaciones')
 def reclutador_postulaciones():
+    if 'user_id' not in session:
+        flash('Debes iniciar sesión para continuar.', 'error')
+        return redirect(url_for('user_login'))
     
-    return render_template('reclutador/postulaciones.html')
+    user_id = session['user_id']
+    
+    try:
+        print(f"DEBUG: user_id = {user_id}")
+        
+        # Consulta para obtener postulaciones de las vacantes del reclutador
+        query = '''
+            SELECT 
+                i.nombre,
+                i.apellidos,
+                l.correo,
+                i.id,
+                p.id_usuario,
+                v.id,
+                v.titulo,
+                COALESCE(e.nombre, 'Sin empresa') as empresa_nombre,
+                p.fecha_postulacion,
+                es.estatus,
+                p.id
+            FROM postulaciones p
+            INNER JOIN vacantes v ON p.id_vacante = v.id
+            INNER JOIN login l ON p.id_usuario = l.id
+            INNER JOIN informacion i ON l.id = i.id_usuario
+            INNER JOIN estatus es ON p.id_estatus = es.id
+            LEFT JOIN empresas e ON v.id_empresa = e.id
+            WHERE v.id_usuario = %s
+            ORDER BY p.fecha_postulacion DESC
+        '''
+        
+        print(f"DEBUG: Query = {query}")
+        print(f"DEBUG: Params = {user_id}")
+        
+        # Usar parámetros seguros para evitar SQL injection
+        postulaciones = conexion.get_datos_parametrizados(query, (user_id,))
+        
+        print(f"DEBUG: Resultado de consulta = {postulaciones}")
+        print(f"DEBUG: Tipo de resultado = {type(postulaciones)}")
+        print(f"DEBUG: Longitud = {len(postulaciones) if postulaciones else 0}")
+        
+        # Calcular las estadísticas de las tarjetas
+        total_postulaciones = 0
+        en_revision = 0
+        aceptadas = 0
+        rechazadas = 0
+        
+        if postulaciones:
+            total_postulaciones = len(postulaciones)
+            en_revision = len([p for p in postulaciones if p[9] == 'En Revisión'])
+            aceptadas = len([p for p in postulaciones if p[9] == 'Aceptado'])
+            rechazadas = len([p for p in postulaciones if p[9] == 'Rechazado'])
+            
+            print(f"DEBUG: Estadísticas - Total: {total_postulaciones}, En Revisión: {en_revision}, Aceptadas: {aceptadas}, Rechazadas: {rechazadas}")
+
+        return render_template(
+            'reclutador/postulaciones.html',
+            postulaciones=postulaciones,
+            total_postulaciones=total_postulaciones,
+            en_revision=en_revision,
+            aceptadas=aceptadas,
+            rechazadas=rechazadas
+        )
+        
+    except Exception as e:
+        print(f"DEBUG: ERROR = {str(e)}")
+        import traceback
+        traceback.print_exc()
+        flash(f'Error al cargar las postulaciones: {str(e)}', 'error')
+        return render_template(
+            'reclutador/postulaciones.html',
+            postulaciones=[],
+            total_postulaciones=0,
+            en_revision=0,
+            aceptadas=0,
+            rechazadas=0
+        )
+
+@app.route('/reclutador/postulaciones/<int:id>/cambiar-estado', methods=['POST'])
+def cambiar_estado_postulacion(id):
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'No autorizado'}), 401
+    
+    try:
+        data = request.get_json()
+        nuevo_estado = data.get('estado')
+        
+        if not nuevo_estado:
+            return jsonify({'success': False, 'message': 'Estado no especificado'}), 400
+        
+        # Mapear el estado a ID
+        estado_map = {
+            'En Revisión': 4,
+            'Aceptado': 5,
+            'Rechazado': 6
+        }
+        
+        id_estado = estado_map.get(nuevo_estado)
+        if not id_estado:
+            return jsonify({'success': False, 'message': 'Estado inválido'}), 400
+        
+        # Verificar que la postulación pertenece a una vacante del reclutador
+        user_id = session['user_id']
+        query_verificacion = '''
+            SELECT p.id FROM postulaciones p
+            INNER JOIN vacantes v ON p.id_vacante = v.id
+            WHERE p.id = %s AND v.id_usuario = %s
+        '''
+        
+        resultado = conexion.get_datos_parametrizados(query_verificacion, (id, user_id))
+        if not resultado:
+            return jsonify({'success': False, 'message': 'Postulación no encontrada o no autorizada'}), 404
+        
+        # Actualizar el estado
+        query_update = 'UPDATE postulaciones SET id_estatus = %s WHERE id = %s'
+        resultado_update = conexion.update_datos_parametrizados(query_update, (id_estado, id))
+        
+        if resultado_update.startswith('Registros actualizados'):
+            return jsonify({'success': True, 'message': 'Estado actualizado correctamente'})
+        else:
+            return jsonify({'success': False, 'message': resultado_update}), 500
+            
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error interno: {str(e)}'}), 500
 
 @app.route('/reclutador/candidato/<int:id>')
 def reclutador_candidato(id):
-  
-    return render_template('reclutador/candidato.html')
+    if 'user_id' not in session:
+        flash('Debes iniciar sesión para ver este perfil', 'error')
+        return redirect(url_for('user_login'))
+    
+    try:
+        conexion = ConexionDB()
+        if not conexion.connection:
+            flash('Error de conexión a la base de datos', 'error')
+            return redirect(url_for('reclutador_postulaciones'))
+        
+        # Obtener información del candidato
+        query_candidato = '''
+            SELECT 
+                i.nombre,
+                i.apellidos,
+                l.correo as email,
+                i.id_empleos,
+                i.id_experiencia,
+                i.id_grado_estudios,
+                i.id_ciudad,
+                i.id_cp
+            FROM informacion i
+            INNER JOIN login l ON i.id_usuario = l.id
+            WHERE i.id_usuario = %s
+        '''
+        
+        candidato_data = conexion.get_datos_parametrizados(query_candidato, (id,))
+        
+        if not candidato_data:
+            flash('Candidato no encontrado', 'error')
+            return redirect(url_for('reclutador_postulaciones'))
+        
+        candidato = candidato_data[0]
+        
+        # Obtener nombres descriptivos de los IDs
+        empleo_query = "SELECT nombre FROM empleos WHERE id = %s"
+        experiencia_query = "SELECT nombre FROM experiencia WHERE id = %s"
+        estudios_query = "SELECT nombre FROM grado_estudios WHERE id = %s"
+        ciudad_query = "SELECT ciudad FROM ubicaciones WHERE id = %s"
+        cp_query = "SELECT cp FROM codigos_postales WHERE id = %s"
+        
+        # Obtener empleo deseado
+        empleo_result = conexion.get_datos_parametrizados(empleo_query, (candidato[3],)) if candidato[3] else None
+        empleo_deseado = empleo_result[0][0] if empleo_result else None
+        
+        # Obtener experiencia
+        experiencia_result = conexion.get_datos_parametrizados(experiencia_query, (candidato[4],)) if candidato[4] else None
+        experiencia = experiencia_result[0][0] if experiencia_result else None
+        
+        # Obtener grado de estudios
+        estudios_result = conexion.get_datos_parametrizados(estudios_query, (candidato[5],)) if candidato[5] else None
+        grado_estudios = estudios_result[0][0] if estudios_result else None
+        
+        # Obtener ciudad
+        ciudad_result = conexion.get_datos_parametrizados(ciudad_query, (candidato[6],)) if candidato[6] else None
+        ciudad = ciudad_result[0][0] if ciudad_result else None
+        
+        # Obtener código postal
+        cp_result = conexion.get_datos_parametrizados(cp_query, (candidato[7],)) if candidato[7] else None
+        codigo_postal = cp_result[0][0] if cp_result else None
+        
+        # Crear objeto candidato con datos procesados
+        candidato_info = {
+            'nombre': candidato[0],
+            'apellidos': candidato[1],
+            'email': candidato[2],
+            'empleo_deseado': empleo_deseado,
+            'experiencia': experiencia,
+            'grado_estudios': grado_estudios,
+            'ciudad': ciudad,
+            'codigo_postal': codigo_postal
+        }
+        
+        return render_template('reclutador/candidato.html', candidato=candidato_info)
+        
+    except Exception as e:
+        print(f"Error en reclutador_candidato: {e}")
+        flash('Error al cargar el perfil del candidato', 'error')
+        return redirect(url_for('reclutador_postulaciones'))
 
 @app.route('/reclutador/crear_vacante', methods=['GET', 'POST'])
 def reclutador_crear_vacante():

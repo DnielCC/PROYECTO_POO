@@ -8,8 +8,8 @@ class ConexionDB():
             self.connection = mysql.connector.connect(
                 host='localhost',
                 user='root',
-                password='123456789', #Agregar password 
-                database='bolsa_trabajo_2')
+                password='garcia01', #Agregar password 
+                database='bolsa_trabajo_1')
             self.cursor = self.connection.cursor()
             self.errMss = ''
         except Exception as ex:
@@ -59,3 +59,30 @@ class ConexionDB():
         except Exception as ex:
             self.errMss = str(ex)
             return f"Error al eliminar: {ex}"
+    
+    def get_datos_parametrizados(self, query, params=None):
+        if not self.connection:
+            return []
+        try:
+            if params:
+                self.cursor.execute(query, params)
+            else:
+                self.cursor.execute(query)
+            return self.cursor.fetchall()
+        except Exception as ex:
+            self.errMss = str(ex)  
+            return []
+    
+    def update_datos_parametrizados(self, query, params=None):
+        if not self.connection:
+            return "No hay conexión a la base de datos"
+        try:
+            if params:
+                self.cursor.execute(query, params)
+            else:
+                self.cursor.execute(query)
+            self.connection.commit()
+            return f"Registros actualizados: {self.cursor.rowcount}"
+        except Exception as ex:
+            self.errMss = str(ex)
+            return f"Error al actualizar: {ex}"

@@ -10,7 +10,7 @@
     <div class="stat-card">
         <div class="stat-header">
             <div>
-                <div class="stat-number">156</div>
+                <div class="stat-number">{{ total_postulaciones }}</div>
                 <div class="stat-label">Total de Postulaciones</div>
             </div>
             <div class="stat-icon blue">
@@ -22,7 +22,7 @@
     <div class="stat-card">
         <div class="stat-header">
             <div>
-                <div class="stat-number">23</div>
+                <div class="stat-number">{{ en_revision }}</div>
                 <div class="stat-label">En Revisión</div>
             </div>
             <div class="stat-icon orange">
@@ -34,7 +34,7 @@
     <div class="stat-card">
         <div class="stat-header">
             <div>
-                <div class="stat-number">18</div>
+                <div class="stat-number"> {{aceptadas}} </div>
                 <div class="stat-label">Aceptadas</div>
             </div>
             <div class="stat-icon green">
@@ -46,7 +46,7 @@
     <div class="stat-card">
         <div class="stat-header">
             <div>
-                <div class="stat-number">8</div>
+                <div class="stat-number">{{rechazadas}}</div>
                 <div class="stat-label">Rechazadas</div>
             </div>
             <div class="stat-icon purple">
@@ -59,47 +59,36 @@
 <!-- Filters -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-body">
-        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px;">
-                <label class="form-label">Buscar Candidato</label>
-                <input type="text" class="form-input" placeholder="Nombre, email o vacante...">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label class="form-label">Buscar Candidato</label>
+                    <input type="text" id="searchInput" class="form-input" placeholder="Nombre, email o vacante..." onkeyup="filtrarPostulaciones()">
+                </div>
+                <div style="min-width: 150px;">
+                    <label class="form-label">Estado</label>
+                    <select id="estadoFilter" class="form-select" onchange="filtrarPostulaciones()">
+                        <option value="">Todos</option>
+                        <option value="En Revisión">En Revisión</option>
+                        <option value="Aceptado">Aceptadas</option>
+                        <option value="Rechazado">Rechazadas</option>
+                    </select>
+                </div>
+                <div style="min-width: 150px;">
+                    <label class="form-label">Fecha</label>
+                    <select id="fechaFilter" class="form-select" onchange="filtrarPostulaciones()">
+                        <option value="">Todas las fechas</option>
+                        <option value="today">Hoy</option>
+                        <option value="week">Esta semana</option>
+                        <option value="month">Este mes</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: end;">
+                    <button class="btn btn-secondary" style="height: 42px;" onclick="limpiarFiltros()">
+                        <i class="fas fa-times"></i>
+                        Limpiar
+                    </button>
+                </div>
             </div>
-            <div style="min-width: 150px;">
-                <label class="form-label">Estado</label>
-                <select class="form-select">
-                    <option value="">Todos</option>
-                    <option value="review">En Revisión</option>
-                    <option value="accepted">Aceptadas</option>
-                    <option value="rejected">Rechazadas</option>
-                    <option value="interview">Entrevista</option>
-                </select>
-            </div>
-            <div style="min-width: 150px;">
-                <label class="form-label">Vacante</label>
-                <select class="form-select">
-                    <option value="">Todas las vacantes</option>
-                    <option value="frontend">Desarrollador Frontend</option>
-                    <option value="backend">Desarrollador Backend</option>
-                    <option value="data">Analista de Datos</option>
-                    <option value="design">UX/UI Designer</option>
-                </select>
-            </div>
-            <div style="min-width: 150px;">
-                <label class="form-label">Fecha</label>
-                <select class="form-select">
-                    <option value="">Todas las fechas</option>
-                    <option value="today">Hoy</option>
-                    <option value="week">Esta semana</option>
-                    <option value="month">Este mes</option>
-                </select>
-            </div>
-            <div style="display: flex; align-items: end;">
-                <button class="btn btn-secondary" style="height: 42px;">
-                    <i class="fas fa-filter"></i>
-                    Filtrar
-                </button>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -107,14 +96,6 @@
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Lista de Postulaciones</h3>
-        <div style="display: flex; gap: 0.5rem;">
-            <button class="btn btn-secondary btn-sm" data-tooltip="Exportar">
-                <i class="fas fa-download"></i>
-            </button>
-            <button class="btn btn-secondary btn-sm" data-tooltip="Marcar como leídas">
-                <i class="fas fa-check-double"></i>
-            </button>
-        </div>
     </div>
     
     <div class="table-container">
@@ -125,236 +106,47 @@
                     <th>Vacante</th>
                     <th>Fecha de Postulación</th>
                     <th>Estado</th>
-                    <th>Puntuación</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
+                {% for p in postulaciones %}
                 <tr>
                     <td>
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3B82F6, #1E40AF); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; color: #1F2937;">Carlos Mendoza</div>
-                                <div style="font-size: 0.75rem; color: #6B7280;">carlos.mendoza@email.com</div>
-                                <div style="font-size: 0.75rem; color: #6B7280;">+52 55 1234 5678</div>
-                            </div>
-                        </div>
+                        <div style="font-weight: 600; color: #1F2937;">{{ p[0] }} {{ p[1] }}</div>
+                        <div style="font-size: 0.85em; color: #888;">{{ p[2] }}</div>
                     </td>
                     <td>
-                        <div>
-                            <div style="font-weight: 600; color: #1F2937;">Desarrollador Frontend Senior</div>
-                            <div style="font-size: 0.75rem; color: #6B7280;">TechCorp Solutions</div>
-                        </div>
+                        <div style="font-weight: 600; color: #1F2937;">{{ p[6] }}</div>
+                        <div style="font-size: 0.85em; color: #888;">{{ p[7] }}</div>
                     </td>
-                    <td>Hace 2 horas</td>
-                    <td><span class="badge badge-warning">En Revisión</span></td>
+                    <td>{{ p[8] }}</td>
                     <td>
-                        <div style="display: flex; align-items: center; gap: 0.25rem;">
-                            <span style="font-weight: 600; color: #10B981;">85%</span>
-                            <div style="width: 60px; height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden;">
-                                <div style="width: 85%; height: 100%; background: #10B981;"></div>
-                            </div>
-                        </div>
+                        <span class="badge {% if p[9] == 'Aceptado' %}badge-success{% elif p[9] == 'Rechazado' %}badge-danger{% elif p[9] == 'En Revisión' %}badge-warning{% else %}badge-secondary{% endif %}">
+                            {{ p[9] }}
+                        </span>
                     </td>
                     <td>
                         <div style="display: flex; gap: 0.5rem;">
-                            <a href="{{ url_for('reclutador_candidato', id=1) }}" class="btn btn-secondary btn-sm" data-tooltip="Ver Perfil">
+                            <a href="{{ url_for('reclutador_candidato', id=p[4]) }}" class="btn btn-secondary btn-sm" data-tooltip="Ver Perfil">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <button class="btn btn-primary btn-sm" data-tooltip="Aceptar">
+                            <button class="btn btn-primary btn-sm" onclick="cambiarEstadoPostulacion('{{ p[10] }}', 'Aceptado')" data-tooltip="Aceptar">
                                 <i class="fas fa-check"></i>
                             </button>
-                            <button class="btn btn-danger btn-sm" data-tooltip="Rechazar">
+                            <button class="btn btn-danger btn-sm" onclick="cambiarEstadoPostulacion('{{ p[10] }}', 'Rechazado')" data-tooltip="Rechazar">
                                 <i class="fas fa-times"></i>
                             </button>
-                            <button class="btn btn-secondary btn-sm" data-tooltip="Entrevista">
-                                <i class="fas fa-calendar"></i>
-                            </button>
                         </div>
                     </td>
                 </tr>
+                {% endfor %}
                 
+                {% if not postulaciones %}
                 <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #10B981, #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; color: #1F2937;">Ana Rodríguez</div>
-                                <div style="font-size: 0.75rem; color: #6B7280;">ana.rodriguez@email.com</div>
-                                <div style="font-size: 0.75rem; color: #6B7280;">+52 55 9876 5432</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div>
-                            <div style="font-weight: 600; color: #1F2937;">Analista de Datos</div>
-                            <div style="font-size: 0.75rem; color: #6B7280;">DataInsights Inc</div>
-                        </div>
-                    </td>
-                    <td>Hace 4 horas</td>
-                    <td><span class="badge badge-success">Aceptada</span></td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.25rem;">
-                            <span style="font-weight: 600; color: #10B981;">92%</span>
-                            <div style="width: 60px; height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden;">
-                                <div style="width: 92%; height: 100%; background: #10B981;"></div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <a href="{{ url_for('reclutador_candidato', id=2) }}" class="btn btn-secondary btn-sm" data-tooltip="Ver Perfil">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <button class="btn btn-primary btn-sm" data-tooltip="Contactar">
-                                <i class="fas fa-envelope"></i>
-                            </button>
-                            <button class="btn btn-secondary btn-sm" data-tooltip="Programar Entrevista">
-                                <i class="fas fa-calendar-plus"></i>
-                            </button>
-                        </div>
-                    </td>
+                    <td colspan="5" style="text-align:center; color:#888;">No hay postulaciones registradas.</td>
                 </tr>
-                
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #F59E0B, #D97706); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; color: #1F2937;">Luis Pérez</div>
-                                <div style="font-size: 0.75rem; color: #6B7280;">luis.perez@email.com</div>
-                                <div style="font-size: 0.75rem; color: #6B7280;">+52 55 5555 1234</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div>
-                            <div style="font-weight: 600; color: #1F2937;">Desarrollador Backend</div>
-                            <div style="font-size: 0.75rem; color: #6B7280;">InnovateSoft</div>
-                        </div>
-                    </td>
-                    <td>Hace 6 horas</td>
-                    <td><span class="badge badge-danger">Rechazada</span></td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.25rem;">
-                            <span style="font-weight: 600; color: #EF4444;">45%</span>
-                            <div style="width: 60px; height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden;">
-                                <div style="width: 45%; height: 100%; background: #EF4444;"></div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <a href="{{ url_for('reclutador_candidato', id=3) }}" class="btn btn-secondary btn-sm" data-tooltip="Ver Perfil">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <button class="btn btn-primary btn-sm" data-tooltip="Reconsiderar">
-                                <i class="fas fa-redo"></i>
-                            </button>
-                            <button class="btn btn-secondary btn-sm" data-tooltip="Feedback">
-                                <i class="fas fa-comment"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #8B5CF6, #7C3AED); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; color: #1F2937;">María González</div>
-                                <div style="font-size: 0.75rem; color: #6B7280;">maria.gonzalez@email.com</div>
-                                <div style="font-size: 0.75rem; color: #6B7280;">+52 55 7777 8888</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div>
-                            <div style="font-weight: 600; color: #1F2937;">UX/UI Designer</div>
-                            <div style="font-size: 0.75rem; color: #6B7280;">CreativeStudio</div>
-                        </div>
-                    </td>
-                    <td>Hace 1 día</td>
-                    <td><span class="badge badge-info">Entrevista</span></td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.25rem;">
-                            <span style="font-weight: 600; color: #3B82F6;">78%</span>
-                            <div style="width: 60px; height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden;">
-                                <div style="width: 78%; height: 100%; background: #3B82F6;"></div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <a href="{{ url_for('reclutador_candidato', id=4) }}" class="btn btn-secondary btn-sm" data-tooltip="Ver Perfil">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <button class="btn btn-primary btn-sm" data-tooltip="Confirmar Entrevista">
-                                <i class="fas fa-calendar-check"></i>
-                            </button>
-                            <button class="btn btn-secondary btn-sm" data-tooltip="Enviar Feedback">
-                                <i class="fas fa-comment-dots"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #EF4444, #DC2626); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.875rem;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 600; color: #1F2937;">Roberto Silva</div>
-                                <div style="font-size: 0.75rem; color: #6B7280;">roberto.silva@email.com</div>
-                                <div style="font-size: 0.75rem; color: #6B7280;">+52 55 9999 1111</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div>
-                            <div style="font-weight: 600; color: #1F2937;">DevOps Engineer</div>
-                            <div style="font-size: 0.75rem; color: #6B7280;">CloudTech Solutions</div>
-                        </div>
-                    </td>
-                    <td>Hace 2 días</td>
-                    <td><span class="badge badge-warning">En Revisión</span></td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.25rem;">
-                            <span style="font-weight: 600; color: #F59E0B;">67%</span>
-                            <div style="width: 60px; height: 4px; background: #E5E7EB; border-radius: 2px; overflow: hidden;">
-                                <div style="width: 67%; height: 100%; background: #F59E0B;"></div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <a href="{{ url_for('reclutador_candidato', id=5) }}" class="btn btn-secondary btn-sm" data-tooltip="Ver Perfil">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <button class="btn btn-primary btn-sm" data-tooltip="Aceptar">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="btn btn-danger btn-sm" data-tooltip="Rechazar">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            <button class="btn btn-secondary btn-sm" data-tooltip="Más Información">
-                                <i class="fas fa-info-circle"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
@@ -363,7 +155,7 @@
     <div class="card-footer">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div style="color: #6B7280; font-size: 0.875rem;">
-                Mostrando 1-5 de 156 postulaciones
+                Mostrando 1-5 de {{ total_postulaciones }} postulaciones
             </div>
             <div style="display: flex; gap: 0.5rem;">
                 <button class="btn btn-secondary btn-sm">
@@ -381,4 +173,160 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+
+<style>
+.badge {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.badge-success {
+    background-color: #10B981;
+    color: white;
+}
+
+.badge-warning {
+    background-color: #F59E0B;
+    color: white;
+}
+
+.badge-danger {
+    background-color: #EF4444;
+    color: white;
+}
+
+.badge-secondary {
+    background-color: #6B7280;
+    color: white;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.table th {
+    background-color: #F9FAFB;
+    font-weight: 600;
+    color: #374151;
+    padding: 0.75rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #F3F4F6;
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background-color: #F9FAFB;
+}
+</style>
+
+<script>
+function cambiarEstadoPostulacion(idPostulacion, nuevoEstado) {
+    if (confirm(`¿Estás seguro de que quieres cambiar el estado a "${nuevoEstado}"?`)) {
+        fetch(`/reclutador/postulaciones/${idPostulacion}/cambiar-estado`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                estado: nuevoEstado
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al cambiar el estado: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cambiar el estado');
+        });
+    }
+}
+
+function filtrarPostulaciones() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const estadoFilter = document.getElementById('estadoFilter').value;
+    const fechaFilter = document.getElementById('fechaFilter').value;
+    
+    const rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        if (row.cells.length < 5) return; // Skip header rows
+        
+        const candidato = row.cells[0].textContent.toLowerCase();
+        const vacante = row.cells[1].textContent.toLowerCase();
+        const fecha = row.cells[2].textContent;
+        const estado = row.cells[3].textContent.trim();
+        
+        let showRow = true;
+        
+        // Filtro de búsqueda
+        if (searchTerm && !candidato.includes(searchTerm) && !vacante.includes(searchTerm)) {
+            showRow = false;
+        }
+        
+        // Filtro de estado
+        if (estadoFilter && estado !== estadoFilter) {
+            showRow = false;
+        }
+        
+        // Filtro de fecha
+        if (fechaFilter && fecha) {
+            const fechaPostulacion = new Date(fecha);
+            const hoy = new Date();
+            
+            switch(fechaFilter) {
+                case 'today':
+                    if (fechaPostulacion.toDateString() !== hoy.toDateString()) {
+                        showRow = false;
+                    }
+                    break;
+                case 'week':
+                    const unaSemanaAtras = new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    if (fechaPostulacion < unaSemanaAtras) {
+                        showRow = false;
+                    }
+                    break;
+                case 'month':
+                    const unMesAtras = new Date(hoy.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    if (fechaPostulacion < unMesAtras) {
+                        showRow = false;
+                    }
+                    break;
+            }
+        }
+        
+        row.style.display = showRow ? '' : 'none';
+    });
+}
+
+function limpiarFiltros() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('estadoFilter').value = '';
+    document.getElementById('fechaFilter').value = '';
+    
+    const rows = document.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        row.style.display = '';
+    });
+}
+</script>
+
+{% endblock %}
