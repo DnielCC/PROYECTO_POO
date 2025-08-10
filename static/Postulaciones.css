@@ -1,488 +1,342 @@
-/* Estilos para la página de Mis Postulaciones */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f8fafc;
-    min-height: 100vh;
-    color: #2E2E2E;
-    line-height: 1.6;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 30px 20px;
-}
+/* Estilos específicos para la página de postulaciones */
 
 /* Header de la página */
-.header {
+.page-header {
     text-align: center;
-    margin-bottom: 50px;
-    background: #FFFFFF;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
-    border: 1px solid #e2e8f0;
+    margin-bottom: 3rem;
 }
 
-.header h1 {
-    font-size: 2.8rem;
-    margin-bottom: 15px;
+.page-title {
+    font-size: 2.5rem;
     font-weight: 700;
     color: #2E2E2E;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     letter-spacing: -0.5px;
 }
 
-.header p {
-    font-size: 1.2rem;
-    color: #64748b;
-    font-weight: 400;
+.page-subtitle {
+    font-size: 1.1rem;
+    color: #6B7280;
     max-width: 600px;
     margin: 0 auto;
 }
 
-/* Filtros y búsqueda */
-.filters {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-    background: #FFFFFF;
-    padding: 25px 30px;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
-    border: 1px solid #e2e8f0;
-    flex-wrap: wrap;
-    gap: 25px;
+/* Contenedor de estadísticas */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
 }
 
-.filter-group {
+.stat-card {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: white;
+    font-size: 1.2rem;
+}
+
+.stat-icon.accepted {
+    background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.stat-icon.rejected {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+}
+
+.stat-info {
     display: flex;
     flex-direction: column;
-    gap: 10px;
 }
 
-.filter-group label {
-    font-weight: 600;
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
     color: #2E2E2E;
-    font-size: 0.95rem;
-    letter-spacing: 0.3px;
+    line-height: 1;
 }
 
-.filter-group select {
-    padding: 12px 18px;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    background: #FFFFFF;
-    color: #2E2E2E;
-    transition: all 0.3s ease;
-    min-width: 220px;
-    font-weight: 500;
+.stat-label {
+    font-size: 0.9rem;
+    color: #6B7280;
+    margin-top: 0.25rem;
 }
 
-.filter-group select:focus {
-    outline: none;
-    border-color: #3B82F6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.search-box input {
-    padding: 14px 22px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 0.95rem;
-    width: 320px;
-    transition: all 0.3s ease;
-    background: #FFFFFF;
-    color: #2E2E2E;
-}
-
-.search-box input:focus {
-    outline: none;
-    border-color: #3B82F6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-}
-
-.search-box input::placeholder {
-    color: #94a3b8;
-}
-
-.search-box button {
-    background: #3B82F6;
-    color: #FFFFFF;
-    border: none;
-    padding: 14px 22px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.search-box button:hover {
-    background: #2563EB;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
-}
-
-.search-icon {
-    font-size: 1.1rem;
-}
-
-/* Contenedor de postulaciones */
-.postulaciones-container {
+/* Contenedor de aplicaciones */
+.applications-container {
     display: grid;
-    gap: 30px;
-    margin-bottom: 50px;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
 }
 
-/* Tarjeta de postulación */
-.postulacion-card {
+/* Tarjeta de aplicación */
+.application-card {
     background: #FFFFFF;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E5E7EB;
     transition: all 0.3s ease;
-    border: 1px solid #e2e8f0;
     position: relative;
     overflow: hidden;
 }
 
-.postulacion-card::before {
+.application-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #3B82F6, #2563EB);
+    background: linear-gradient(90deg, #3B82F6, #1E40AF);
 }
 
-.postulacion-card:hover {
+.application-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
     border-color: #3B82F6;
 }
 
-/* Header de la postulación */
-.postulacion-header {
+/* Header de la aplicación */
+.application-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 25px;
-    gap: 25px;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
 }
 
-.empresa-info {
-    display: flex;
-    align-items: center;
-    gap: 20px;
+.job-info {
     flex: 1;
 }
 
-.empresa-logo {
-    width: 70px;
-    height: 70px;
-    border-radius: 16px;
-    object-fit: cover;
-    border: 3px solid #f1f5f9;
-    background: #f8fafc;
-}
-
-.empresa-details h3 {
-    font-size: 1.4rem;
-    font-weight: 700;
+.job-title {
+    font-size: 1.3rem;
+    font-weight: 600;
     color: #2E2E2E;
-    margin-bottom: 8px;
+    margin: 0 0 0.75rem 0;
     line-height: 1.3;
 }
 
-.empresa-nombre {
-    font-size: 1.05rem;
-    color: #3B82F6;
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-
-.ubicacion {
-    font-size: 0.95rem;
-    color: #64748b;
+.company-info, .location-info {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-weight: 500;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #6B7280;
+    font-size: 0.95rem;
+}
+
+.company-info i, .location-info i {
+    color: #3B82F6;
+    width: 16px;
 }
 
 /* Badges de estado */
 .status-badge {
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    white-space: nowrap;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.status-badge.pendiente {
-    background: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fde68a;
-}
-
-.status-badge.revisando {
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #93c5fd;
-}
-
-.status-badge.aceptada {
-    background: #dcfce7;
-    color: #166534;
-    border: 1px solid #86efac;
-}
-
-.status-badge.rechazada {
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fca5a5;
-}
-
-/* Detalles de la postulación */
-.postulacion-details {
-    margin-bottom: 30px;
-    background: #f8fafc;
-    padding: 25px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-}
-
-.detail-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.detail-row:last-child {
-    border-bottom: none;
-}
-
-.detail-row .label {
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: #475569;
-    font-size: 0.95rem;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-.detail-row .value {
-    color: #2E2E2E;
-    font-weight: 500;
-    font-size: 0.95rem;
+.status-badge.reviewing {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: white;
 }
 
-/* Acciones de la postulación */
-.postulacion-actions {
+.status-badge.accepted {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+}
+
+.status-badge.rejected {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: white;
+}
+
+.status-badge i {
+    font-size: 0.8rem;
+}
+
+/* Detalles de la aplicación */
+.application-details {
+    border-top: 1px solid #E5E7EB;
+    padding-top: 1rem;
+}
+
+.application-date {
     display: flex;
-    gap: 18px;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.application-date i {
+    color: #3B82F6;
+    width: 16px;
+}
+
+/* Acciones de la aplicación */
+.application-actions {
+    display: flex;
+    gap: 0.75rem;
     flex-wrap: wrap;
 }
 
-.btn-ver-detalles,
-.btn-cancelar,
-.btn-contactar {
-    padding: 14px 28px;
+.btn-view, .btn-withdraw, .btn-contact, .btn-feedback {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
     border: none;
-    border-radius: 12px;
-    font-size: 0.95rem;
-    font-weight: 600;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
-    display: inline-block;
-    text-align: center;
-    letter-spacing: 0.3px;
 }
 
-.btn-ver-detalles {
-    background: #3B82F6;
-    color: #FFFFFF;
+.btn-view {
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    color: white;
 }
 
-.btn-ver-detalles:hover {
-    background: #2563EB;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+.btn-view:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.btn-cancelar {
-    background: #ef4444;
-    color: #FFFFFF;
+.btn-withdraw {
+    background: #F3F4F6;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
 }
 
-.btn-cancelar:hover {
-    background: #dc2626;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+.btn-withdraw:hover {
+    background: #EF4444;
+    color: white;
+    border-color: #EF4444;
 }
 
-.btn-contactar {
-    background: #10b981;
-    color: #FFFFFF;
+.btn-contact {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
 }
 
-.btn-contactar:hover {
-    background: #059669;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+.btn-contact:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Estado vacío */
-.no-postulaciones {
-    text-align: center;
-    padding: 80px 20px;
+.btn-feedback {
+    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    color: white;
 }
 
-.empty-state {
-    background: #FFFFFF;
-    border-radius: 24px;
-    padding: 60px 40px;
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
-    border: 1px solid #e2e8f0;
-    max-width: 500px;
-    margin: 0 auto;
+.btn-feedback:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
-.empty-icon {
-    width: 100px;
-    height: 100px;
-    opacity: 0.6;
-    margin-bottom: 25px;
-}
-
-.empty-state h3 {
-    font-size: 1.6rem;
-    color: #2E2E2E;
-    margin-bottom: 15px;
-    font-weight: 700;
-}
-
-.empty-state p {
-    color: #64748b;
-    margin-bottom: 30px;
-    font-size: 1.1rem;
-    line-height: 1.6;
-}
-
-.btn-explorar {
-    background: #3B82F6;
-    color: #FFFFFF;
-    padding: 16px 32px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-block;
-    font-size: 1rem;
-}
-
-.btn-explorar:hover {
-    background: #2563EB;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
-}
-
-/* Responsive */
+/* Responsive design */
 @media (max-width: 768px) {
-    .container {
-        padding: 20px 15px;
+    .page-title {
+        font-size: 2rem;
     }
-    
-    .header {
-        padding: 30px 20px;
-        margin-bottom: 40px;
+
+    .stats-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
-    
-    .header h1 {
-        font-size: 2.2rem;
+
+    .applications-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
-    
-    .filters {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 20px;
+
+    .application-card {
+        padding: 1.25rem;
     }
-    
-    .search-box input {
-        width: 100%;
-    }
-    
-    .postulacion-header {
+
+    .application-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 20px;
+        gap: 1rem;
     }
-    
+
     .status-badge {
         align-self: flex-start;
     }
-    
-    .postulacion-actions {
+
+    .application-actions {
         flex-direction: column;
     }
-    
-    .btn-ver-detalles,
-    .btn-cancelar,
-    .btn-contactar {
+
+    .btn-view, .btn-withdraw, .btn-contact, .btn-feedback {
         width: 100%;
-    }
-    
-    .detail-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
-    
-    .postulacion-details {
-        padding: 20px;
+        justify-content: center;
     }
 }
 
 @media (max-width: 480px) {
-    .header h1 {
+    .page-title {
         font-size: 1.8rem;
     }
-    
-    .postulacion-card {
-        padding: 25px 20px;
+
+    .stat-card {
+        padding: 1rem;
     }
-    
-    .empresa-info {
-        flex-direction: column;
-        align-items: flex-start;
-        text-align: center;
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
     }
-    
-    .empresa-logo {
-        width: 60px;
-        height: 60px;
+
+    .stat-number {
+        font-size: 1.5rem;
     }
-    
-    .empty-state {
-        padding: 40px 25px;
+
+    .job-title {
+        font-size: 1.2rem;
+    }
+
+    .application-card {
+        padding: 1rem;
     }
 } 

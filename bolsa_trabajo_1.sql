@@ -1,6 +1,6 @@
 create database bolsa_trabajo_1;
 use bolsa_trabajo_1;
-drop database bolsa_trabajo_1;
+
 
 create table estatus(
 	id int auto_increment,
