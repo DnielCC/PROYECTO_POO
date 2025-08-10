@@ -62,7 +62,7 @@ def user_login():
             if session['user_type'] == 'admin':
                 return redirect(url_for('admin_dashboard'))
             elif session['user_type'] == 'reclutador':
-                return redirect(url_for('reclutador_dashboard'))
+                return redirect(url_for('reclutador_vacantes'))
             else:
                 return redirect(url_for('inicio_usuarios'))
         else:
@@ -274,12 +274,49 @@ def editar_usuario(id):
 @app.route('/reclutador/dashboard')
 def reclutador_dashboard():
     
-    return render_template('reclutador/dashboard.html')
+    return render_template('reclutador/vacantes.html')
 
 @app.route('/reclutador/vacantes')
 def reclutador_vacantes():
-
-    return render_template('reclutador/vacantes.html')
+    if 'user_id' not in session:
+        flash('Debes iniciar sesión para continuar.', 'error')
+        return redirect(url_for('user_login'))
+    
+    user_id = session['user_id']
+    
+    # Consulta para obtener las vacantes del usuario logueado
+    query = '''
+        SELECT v.id, v.titulo, e.nombre as empresa, 
+               CONCAT(u.ciudad, ', ', u.estado, ', ', u.pais) as ubicacion,
+               DATE_FORMAT(v.fecha_publicacion, '%d %b %Y') as fecha_publicacion,
+               (SELECT COUNT(*) FROM postulaciones p WHERE p.id_vacante = v.id) as postulaciones,
+               es.estatus as estado
+        FROM vacantes v
+        INNER JOIN empresas e ON v.id_empresa = e.id
+        INNER JOIN ubicaciones u ON v.id_ubicacion = u.id
+        LEFT JOIN estado_vacantes ev ON v.id = ev.id_vacante
+        LEFT JOIN estatus es ON ev.id_estatus = es.id
+        WHERE v.id_usuario = {user_id}
+        ORDER BY v.fecha_publicacion DESC
+    '''.format(user_id=user_id)
+    vacantes = conexion.get_datos(query)
+    
+    # Consulta de catálogo de estatus (solo los primeros 3 estados)
+    estatus_catalogo = conexion.get_datos('SELECT id, estatus FROM estatus WHERE id IN (1,2,3) ORDER BY id')
+    
+    # Calcular estadísticas
+    total_vacantes = len(vacantes)
+    vacantes_activas = len([v for v in vacantes if v[6] == 'Activa'])
+    total_postulaciones = sum([v[5] for v in vacantes])
+    promedio_postulaciones = round(total_postulaciones / total_vacantes, 1) if total_vacantes > 0 else 0
+    
+    return render_template('reclutador/vacantes.html', 
+                         vacantes=vacantes, 
+                         estatus_catalogo=estatus_catalogo,
+                         total_vacantes=total_vacantes,
+                         vacantes_activas=vacantes_activas,
+                         total_postulaciones=total_postulaciones,
+                         promedio_postulaciones=promedio_postulaciones)
 
 @app.route('/reclutador/postulaciones')
 def reclutador_postulaciones():
@@ -378,17 +415,18 @@ def reclutador_crear_vacante():
             else:
                 ubicacion_id = ubicacion['id']
 
-            # 3. Insertar la vacante
+            # 3. Insertar la vacante (ahora incluye id_usuario)
+            id_usuario = session.get('user_id')
             cursor.execute(
                 """INSERT INTO vacantes (
-                    id_empresa, titulo, id_ubicacion, id_tipo_trabajo, 
+                    id_usuario, id_empresa, titulo, id_ubicacion, id_tipo_trabajo, 
                     id_modalidad_trabajo, salario_minimo, salario_maximo, 
                     id_nivel_experiencia, fecha_limite, numero_vacantes, 
                     descripcion, requisitos, beneficios, email_contacto, 
                     telefono_contacto
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (
-                    empresa_id, titulo, ubicacion_id, tipo_trabajo_map[tipo_trabajo],
+                    id_usuario, empresa_id, titulo, ubicacion_id, tipo_trabajo_map[tipo_trabajo],
                     modalidad_map[modalidad], salario_min, salario_max,
                     experiencia_map[experiencia], fecha_limite, num_vacantes,
                     descripcion, requisitos, beneficios, email_contacto,
@@ -454,8 +492,538 @@ def reclutador_crear_vacante():
     # Para el método GET, simplemente renderizar el template
     return render_template('reclutador/crear_vacante.html')   
 
-#---------- END RECLUTADOR DASHBOARD ---------
 
+@app.route('/reclutador/vacantes/crear', methods=['POST'])
+def crear_vacante_ajax():
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    try:
+        data = request.get_json()
+        user_id = session['user_id']
+        
+        # Validar datos requeridos
+        if not data.get('titulo') or not data.get('empresa') or not data.get('ubicacion'):
+            return jsonify({'error': 'Faltan campos requeridos'}), 400
+        
+        # Procesar ubicación
+        ubicacion_parts = [part.strip() for part in data['ubicacion'].split(',')]
+        ciudad = ubicacion_parts[0] if len(ubicacion_parts) > 0 else ''
+        estado = ubicacion_parts[1] if len(ubicacion_parts) > 1 else ''
+        pais = ubicacion_parts[2] if len(ubicacion_parts) > 2 else 'México'
+        
+        # Mapear valores según los catálogos de la DB
+        tipo_trabajo_map = {
+            'full-time': 1,      # Tiempo Completo
+            'part-time': 2,      # Medio Tiempo
+            'contract': 3,       # Por Contrato
+            'internship': 4      # Prácticas
+        }
+        
+        modalidad_map = {
+            'presencial': 1,     # Presencial
+            'remote': 2,         # Remoto
+            'hybrid': 3          # Híbrido
+        }
+        
+        nivel_experiencia_map = {
+            'entry': 1,          # Sin experiencia
+            'junior': 2,         # Junior (1-3 años)
+            'mid': 3,            # Mid-level (3-5 años)
+            'senior': 4,         # Senior (5+ años)
+            'lead': 5            # Lead/Manager
+        }
+        
+        # 1. Insertar empresa si no existe
+        empresa_query = f"SELECT id FROM empresas WHERE nombre = '{data['empresa']}'"
+        empresa = conexion.get_datos(empresa_query)
+        if not empresa:
+            conexion.insert_datos(f"INSERT INTO empresas (nombre) VALUES ('{data['empresa']}')")
+            empresa_id = conexion.cursor.lastrowid
+        else:
+            empresa_id = empresa[0][0]
+        
+        # 2. Insertar ubicación si no existe
+        ubicacion_query = f"SELECT id FROM ubicaciones WHERE ciudad = '{ciudad}' AND estado = '{estado}' AND pais = '{pais}'"
+        ubicacion = conexion.get_datos(ubicacion_query)
+        if not ubicacion:
+            conexion.insert_datos(f"INSERT INTO ubicaciones (ciudad, estado, pais) VALUES ('{ciudad}', '{estado}', '{pais}')")
+            ubicacion_id = conexion.cursor.lastrowid
+        else:
+            ubicacion_id = ubicacion[0][0]
+        
+        # 3. Insertar vacante con todos los campos de la DB
+        tipo_trabajo_id = tipo_trabajo_map.get(data.get('job_type', 'full-time'), 1)
+        modalidad_id = modalidad_map.get(data.get('work_mode', 'presencial'), 1)
+        nivel_experiencia_id = nivel_experiencia_map.get(data.get('experience_level', 'entry'), 1)
+        
+        # Procesar salario
+        salario_minimo = data.get('salary_min') if data.get('salary_min') else None
+        salario_maximo = data.get('salary_max') if data.get('salary_max') else None
+        
+        # Procesar fecha límite
+        fecha_limite = data.get('deadline') if data.get('deadline') else None
+        
+        vacante_query = f"""
+            INSERT INTO vacantes (
+                id_usuario, id_empresa, titulo, id_ubicacion, id_tipo_trabajo, 
+                id_modalidad_trabajo, salario_minimo, salario_maximo, id_nivel_experiencia,
+                fecha_limite, numero_vacantes, descripcion, requisitos, beneficios,
+                email_contacto, telefono_contacto
+            ) VALUES (
+                {user_id}, {empresa_id}, '{data['titulo']}', {ubicacion_id}, {tipo_trabajo_id}, 
+                {modalidad_id}, {salario_minimo or 'NULL'}, {salario_maximo or 'NULL'}, {nivel_experiencia_id},
+                {f"'{fecha_limite}'" if fecha_limite else 'NULL'}, {data.get('vacancies_count', 1)},
+                '{data.get('job_description', '')}', '{data.get('requirements', '')}', '{data.get('benefits', '')}',
+                '{data.get('contact_email', '')}', '{data.get('contact_phone', '')}'
+            )
+        """
+        conexion.insert_datos(vacante_query)
+        vacante_id = conexion.cursor.lastrowid
+        
+        # 4. Procesar habilidades requeridas
+        if data.get('skills'):
+            habilidades_req = [h.strip() for h in data['skills'].split(',') if h.strip()]
+            for habilidad in habilidades_req:
+                # Verificar si la habilidad existe
+                habilidad_query = f"SELECT id FROM habilidades WHERE nombre = '{habilidad}'"
+                habilidad_db = conexion.get_datos(habilidad_query)
+                if not habilidad_db:
+                    conexion.insert_datos(f"INSERT INTO habilidades (nombre) VALUES ('{habilidad}')")
+                    habilidad_id = conexion.cursor.lastrowid
+                else:
+                    habilidad_id = habilidad_db[0][0]
+                
+                # Relacionar habilidad con vacante
+                conexion.insert_datos(f"INSERT INTO vacantes_habilidades_requeridas (id_vacante, id_habilidad) VALUES ({vacante_id}, {habilidad_id})")
+        
+        # 5. Procesar habilidades deseadas
+        if data.get('nice_to_have'):
+            habilidades_des = [h.strip() for h in data['nice_to_have'].split(',') if h.strip()]
+            for habilidad in habilidades_des:
+                # Verificar si la habilidad existe
+                habilidad_query = f"SELECT id FROM habilidades WHERE nombre = '{habilidad}'"
+                habilidad_db = conexion.get_datos(habilidad_query)
+                if not habilidad_db:
+                    conexion.insert_datos(f"INSERT INTO habilidades (nombre) VALUES ('{habilidad}')")
+                    habilidad_id = conexion.cursor.lastrowid
+                else:
+                    habilidad_id = habilidad_db[0][0]
+                
+                # Relacionar habilidad con vacante
+                conexion.insert_datos(f"INSERT INTO vacantes_habilidades_deseadas (id_vacante, id_habilidad) VALUES ({vacante_id}, {habilidad_id})")
+        
+        # 6. Insertar estado inicial (Activa = 1)
+        conexion.insert_datos(f"INSERT INTO estado_vacantes (id_vacante, id_estatus) VALUES ({vacante_id}, 1)")
+        
+        return jsonify({'success': True, 'vacante_id': vacante_id})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/reclutador/vacantes/<int:vacante_id>/datos')
+def obtener_datos_vacante(vacante_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    try:
+        user_id = session['user_id']
+        query = f"""
+            SELECT v.titulo, e.nombre as empresa, 
+                   CONCAT(u.ciudad, ', ', u.estado, ', ', u.pais) as ubicacion,
+                   tt.nombre as tipo_trabajo, mt.nombre as modalidad,
+                   v.salario_minimo, v.salario_maximo, v.descripcion,
+                   es.estatus as estado, v.email_contacto, v.telefono_contacto,
+                   v.requisitos, v.beneficios, ne.nombre as nivel_experiencia
+            FROM vacantes v
+            INNER JOIN empresas e ON v.id_empresa = e.id
+            INNER JOIN ubicaciones u ON v.id_ubicacion = u.id
+            INNER JOIN tipos_trabajo tt ON v.id_tipo_trabajo = tt.id
+            INNER JOIN modalidades_trabajo mt ON v.id_modalidad_trabajo = mt.id
+            INNER JOIN niveles_experiencia ne ON v.id_nivel_experiencia = ne.id
+            LEFT JOIN estado_vacantes ev ON v.id = ev.id_vacante
+            LEFT JOIN estatus es ON ev.id_estatus = es.id
+            WHERE v.id = {vacante_id} AND v.id_usuario = {user_id}
+        """
+        resultado = conexion.get_datos(query)
+        
+        if not resultado:
+            return jsonify({'error': 'Vacante no encontrada'}), 404
+        
+        vacante = resultado[0]
+        return jsonify({
+            'titulo': vacante[0],
+            'empresa': vacante[1],
+            'ubicacion': vacante[2],
+            'tipo_trabajo': vacante[3],
+            'modalidad': vacante[4],
+            'salario_minimo': vacante[5],
+            'salario_maximo': vacante[6],
+            'descripcion': vacante[7],
+            'estado': vacante[8],
+            'email_contacto': vacante[9],
+            'telefono_contacto': vacante[10],
+            'requisitos': vacante[11],
+            'beneficios': vacante[12],
+            'nivel_experiencia': vacante[13]
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/reclutador/vacantes/<int:vacante_id>/detalles')
+def obtener_detalles_vacante(vacante_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    try:
+        user_id = session['user_id']
+        query = f"""
+            SELECT v.titulo, e.nombre as empresa, 
+                   CONCAT(u.ciudad, ', ', u.estado, ', ', u.pais) as ubicacion,
+                   tt.nombre as tipo_trabajo, mt.nombre as modalidad,
+                   v.salario_minimo, v.salario_maximo, v.descripcion,
+                   es.estatus as estado, v.fecha_publicacion,
+                   (SELECT COUNT(*) FROM postulaciones p WHERE p.id_vacante = v.id) as postulaciones,
+                   v.requisitos, v.beneficios, ne.nombre as nivel_experiencia,
+                   v.fecha_limite, v.numero_vacantes
+            FROM vacantes v
+            INNER JOIN empresas e ON v.id_empresa = e.id
+            INNER JOIN ubicaciones u ON v.id_ubicacion = u.id
+            INNER JOIN tipos_trabajo tt ON v.id_tipo_trabajo = tt.id
+            INNER JOIN modalidades_trabajo mt ON v.id_modalidad_trabajo = mt.id
+            INNER JOIN niveles_experiencia ne ON v.id_nivel_experiencia = ne.id
+            LEFT JOIN estado_vacantes ev ON v.id = ev.id_vacante
+            LEFT JOIN estatus es ON ev.id_estatus = es.id
+            WHERE v.id = {vacante_id} AND v.id_usuario = {user_id}
+        """
+        resultado = conexion.get_datos(query)
+        
+        if not resultado:
+            return jsonify({'error': 'Vacante no encontrada'}), 404
+        
+        vacante = resultado[0]
+        # Obtener habilidades requeridas
+        habilidades_req = conexion.get_datos(f"""
+            SELECT h.nombre FROM vacantes_habilidades_requeridas vhr
+            INNER JOIN habilidades h ON vhr.id_habilidad = h.id
+            WHERE vhr.id_vacante = {vacante_id}
+        """)
+        habilidades_req = [h[0] for h in habilidades_req] if habilidades_req else []
+        # Obtener habilidades deseadas
+        habilidades_des = conexion.get_datos(f"""
+            SELECT h.nombre FROM vacantes_habilidades_deseadas vhd
+            INNER JOIN habilidades h ON vhd.id_habilidad = h.id
+            WHERE vhd.id_vacante = {vacante_id}
+        """)
+        habilidades_des = [h[0] for h in habilidades_des] if habilidades_des else []
+        return jsonify({
+            'titulo': vacante[0],
+            'empresa': vacante[1],
+            'ubicacion': vacante[2],
+            'tipo_trabajo': vacante[3],
+            'modalidad': vacante[4],
+            'salario_minimo': vacante[5],
+            'salario_maximo': vacante[6],
+            'descripcion': vacante[7],
+            'estado': vacante[8],
+            'fecha_creacion': vacante[9].strftime('%d/%m/%Y') if vacante[9] else '',
+            'postulaciones': vacante[10],
+            'requisitos': vacante[11],
+            'beneficios': vacante[12],
+            'nivel_experiencia': vacante[13],
+            'fecha_limite': vacante[14].strftime('%d/%m/%Y') if vacante[14] else None,
+            'numero_vacantes': vacante[15],
+            'habilidades_requeridas': habilidades_req,
+            'habilidades_deseadas': habilidades_des
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/reclutador/vacantes/<int:vacante_id>/editar', methods=['POST'])
+def editar_vacante_ajax(vacante_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    try:
+        data = request.get_json()
+        user_id = session['user_id']
+        
+        # Verificar que la vacante pertenece al usuario
+        vacante_check = conexion.get_datos(f"SELECT id FROM vacantes WHERE id = {vacante_id} AND id_usuario = {user_id}")
+        if not vacante_check:
+            return jsonify({'error': 'Vacante no encontrada o sin permisos'}), 404
+        
+        # Validar datos requeridos
+        if not data.get('titulo') or not data.get('empresa') or not data.get('ubicacion'):
+            return jsonify({'error': 'Faltan campos requeridos'}), 400
+        
+        # Procesar ubicación
+        ubicacion_parts = [part.strip() for part in data['ubicacion'].split(',')]
+        ciudad = ubicacion_parts[0] if len(ubicacion_parts) > 0 else ''
+        estado = ubicacion_parts[1] if len(ubicacion_parts) > 1 else ''
+        pais = ubicacion_parts[2] if len(ubicacion_parts) > 2 else 'México'
+        
+        # Mapear valores según los catálogos de la DB
+        tipo_trabajo_map = {
+            'full-time': 1,      # Tiempo Completo
+            'part-time': 2,      # Medio Tiempo
+            'contract': 3,       # Por Contrato
+            'internship': 4      # Prácticas
+        }
+        
+        modalidad_map = {
+            'presencial': 1,     # Presencial
+            'remote': 2,         # Remoto
+            'hybrid': 3          # Híbrido
+        }
+        
+        nivel_experiencia_map = {
+            'entry': 1,          # Sin experiencia
+            'junior': 2,         # Junior (1-3 años)
+            'mid': 3,            # Mid-level (3-5 años)
+            'senior': 4,         # Senior (5+ años)
+            'lead': 5            # Lead/Manager
+        }
+        
+        # 1. Actualizar empresa
+        empresa_query = f"SELECT id FROM empresas WHERE nombre = '{data['empresa']}'"
+        empresa = conexion.get_datos(empresa_query)
+        if not empresa:
+            conexion.insert_datos(f"INSERT INTO empresas (nombre) VALUES ('{data['empresa']}')")
+            empresa_id = conexion.cursor.lastrowid
+        else:
+            empresa_id = empresa[0][0]
+        
+        # 2. Actualizar ubicación
+        ubicacion_query = f"SELECT id FROM ubicaciones WHERE ciudad = '{ciudad}' AND estado = '{estado}' AND pais = '{pais}'"
+        ubicacion = conexion.get_datos(ubicacion_query)
+        if not ubicacion:
+            conexion.insert_datos(f"INSERT INTO ubicaciones (ciudad, estado, pais) VALUES ('{ciudad}', '{estado}', '{pais}')")
+            ubicacion_id = conexion.cursor.lastrowid
+        else:
+            ubicacion_id = ubicacion[0][0]
+        
+        # 3. Actualizar vacante con todos los campos
+        tipo_trabajo_id = tipo_trabajo_map.get(data.get('job_type', 'full-time'), 1)
+        modalidad_id = modalidad_map.get(data.get('work_mode', 'presencial'), 1)
+        nivel_experiencia_id = nivel_experiencia_map.get(data.get('experience_level', 'entry'), 1)
+        
+        # Procesar salario
+        salario_minimo = data.get('salary_min') if data.get('salary_min') else None
+        salario_maximo = data.get('salary_max') if data.get('salary_max') else None
+        
+        # Procesar fecha límite
+        fecha_limite = data.get('deadline') if data.get('deadline') else None
+        
+        update_query = f"""
+            UPDATE vacantes SET 
+                id_empresa = {empresa_id},
+                titulo = '{data['titulo']}',
+                id_ubicacion = {ubicacion_id},
+                id_tipo_trabajo = {tipo_trabajo_id},
+                id_modalidad_trabajo = {modalidad_id},
+                id_nivel_experiencia = {nivel_experiencia_id},
+                salario_minimo = {salario_minimo or 'NULL'},
+                salario_maximo = {salario_maximo or 'NULL'},
+                fecha_limite = {f"'{fecha_limite}'" if fecha_limite else 'NULL'},
+                numero_vacantes = {data.get('vacancies_count', 1)},
+                descripcion = '{data.get('job_description', '')}',
+                requisitos = '{data.get('requirements', '')}',
+                beneficios = '{data.get('benefits', '')}',
+                email_contacto = '{data.get('contact_email', '')}',
+                telefono_contacto = '{data.get('contact_phone', '')}'
+            WHERE id = {vacante_id} AND id_usuario = {user_id}
+        """
+        conexion.update_datos(update_query)
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/reclutador/vacantes/<int:vacante_id>/eliminar', methods=['POST'])
+def eliminar_vacante_ajax(vacante_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    try:
+        user_id = session['user_id']
+        
+        # Verificar que la vacante pertenece al usuario
+        vacante_check = conexion.get_datos(f"SELECT id FROM vacantes WHERE id = {vacante_id} AND id_usuario = {user_id}")
+        if not vacante_check:
+            return jsonify({'error': 'Vacante no encontrada o sin permisos'}), 404
+        
+        # Primero eliminar las relaciones dependientes
+        # Eliminar habilidades requeridas
+        conexion.delete_datos(f"DELETE FROM vacantes_habilidades_requeridas WHERE id_vacante = {vacante_id}")
+        
+        # Eliminar habilidades deseadas
+        conexion.delete_datos(f"DELETE FROM vacantes_habilidades_deseadas WHERE id_vacante = {vacante_id}")
+        
+        # Eliminar estado de vacante
+        conexion.delete_datos(f"DELETE FROM estado_vacantes WHERE id_vacante = {vacante_id}")
+        
+        # Eliminar postulaciones si existen
+        conexion.delete_datos(f"DELETE FROM postulaciones WHERE id_vacante = {vacante_id}")
+        
+        # Finalmente eliminar la vacante
+        resultado = conexion.delete_datos(f"DELETE FROM vacantes WHERE id = {vacante_id} AND id_usuario = {user_id}")
+        
+        if "Error" in resultado:
+            return jsonify({'error': resultado}), 500
+        
+        return jsonify({'success': True, 'message': 'Vacante eliminada exitosamente'})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/reclutador/vacantes/<int:vacante_id>/cambiar-estado', methods=['POST'])
+def cambiar_estado_vacante_ajax(vacante_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    try:
+        data = request.get_json()
+        nuevo_estado = data.get('estado')
+        user_id = session['user_id']
+        
+        if not nuevo_estado:
+            return jsonify({'error': 'Estado no especificado'}), 400
+        
+        # Verificar que la vacante pertenece al usuario
+        vacante_check = conexion.get_datos(f"SELECT id FROM vacantes WHERE id = {vacante_id} AND id_usuario = {user_id}")
+        if not vacante_check:
+            return jsonify({'error': 'Vacante no encontrada o sin permisos'}), 404
+        
+        # Verificar si ya existe un registro de estado
+        existe = conexion.get_datos(f"SELECT id FROM estado_vacantes WHERE id_vacante = {vacante_id}")
+        if existe:
+            conexion.update_datos(f"UPDATE estado_vacantes SET id_estatus = {nuevo_estado} WHERE id_vacante = {vacante_id}")
+        else:
+            conexion.insert_datos(f"INSERT INTO estado_vacantes (id_vacante, id_estatus) VALUES ({vacante_id}, {nuevo_estado})")
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/reclutador/vacantes/<int:vacante_id>/estado', methods=['POST'])
+def cambiar_estado_vacante(vacante_id):
+    if 'user_id' not in session:
+        flash('Debes iniciar sesión para continuar.', 'error')
+        return redirect(url_for('user_login'))
+    nuevo_estado = request.form.get('estado')
+    existe = conexion.get_datos(f"SELECT id FROM estado_vacantes WHERE id_vacante={vacante_id}")
+    if existe:
+        conexion.update_datos(f"UPDATE estado_vacantes SET id_estatus={nuevo_estado} WHERE id_vacante={vacante_id}")
+    else:
+        conexion.insert_datos(f"INSERT INTO estado_vacantes (id_vacante, id_estatus) VALUES ({vacante_id}, {nuevo_estado})")
+    flash('Estado de la vacante actualizado.', 'success')
+    return redirect(url_for('reclutador_vacantes'))
+
+@app.route('/reclutador/vacantes/<int:vacante_id>/editar', methods=['GET', 'POST'])
+def editar_vacante(vacante_id):
+    return "Edición de vacante (pendiente de implementar)"
+
+
+
+@app.route('/reclutador/vacantes/buscar', methods=['POST'])
+def buscar_vacantes_ajax():
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    try:
+        data = request.get_json()
+        user_id = session['user_id']
+        
+        # Obtener parámetros de búsqueda
+        search_term = data.get('search', '').strip()
+        status_filter = data.get('status', '')
+        type_filter = data.get('type', '')
+        
+        # Construir la consulta base
+        base_query = '''
+            SELECT v.id, v.titulo, e.nombre as empresa, 
+                   CONCAT(u.ciudad, ', ', u.estado, ', ', u.pais) as ubicacion,
+                   DATE_FORMAT(v.fecha_publicacion, '%d %b %Y') as fecha_publicacion,
+                   (SELECT COUNT(*) FROM postulaciones p WHERE p.id_vacante = v.id) as postulaciones,
+                   es.estatus as estado
+            FROM vacantes v
+            INNER JOIN empresas e ON v.id_empresa = e.id
+            INNER JOIN ubicaciones u ON v.id_ubicacion = u.id
+            LEFT JOIN estado_vacantes ev ON v.id = ev.id_vacante
+            LEFT JOIN estatus es ON ev.id_estatus = es.id
+            WHERE v.id_usuario = {user_id}
+        '''.format(user_id=user_id)
+        
+        # Agregar filtros
+        conditions = []
+        params = []
+        
+        if search_term:
+            conditions.append("""
+                (v.titulo LIKE %s OR e.nombre LIKE %s OR 
+                 CONCAT(u.ciudad, ', ', u.estado, ', ', u.pais) LIKE %s)
+            """)
+            search_pattern = f'%{search_term}%'
+            params.extend([search_pattern, search_pattern, search_pattern])
+        
+        if status_filter:
+            conditions.append("es.estatus = %s")
+            params.append(status_filter)
+        
+        if type_filter:
+            # Mapear tipo de trabajo a ID
+            tipo_map = {
+                'Tiempo Completo': 1,
+                'Medio Tiempo': 2,
+                'Por Contrato': 3,
+                'Prácticas': 4
+            }
+            tipo_id = tipo_map.get(type_filter)
+            if tipo_id:
+                conditions.append("v.id_tipo_trabajo = %s")
+                params.append(tipo_id)
+        
+        # Agregar condiciones a la consulta
+        if conditions:
+            base_query += " AND " + " AND ".join(conditions)
+        
+        base_query += " ORDER BY v.fecha_publicacion DESC"
+        
+        # Ejecutar consulta
+        conexion.cursor.execute(base_query, params)
+        vacantes = conexion.cursor.fetchall()
+        
+        # Calcular estadísticas actualizadas
+        total_vacantes = len(vacantes)
+        vacantes_activas = len([v for v in vacantes if v[6] == 'Activa'])
+        total_postulaciones = sum([v[5] for v in vacantes])
+        
+        # Obtener catálogo de estatus (solo los primeros 3 estados)
+        estatus_catalogo = conexion.get_datos('SELECT id, estatus FROM estatus WHERE id IN (1,2,3) ORDER BY id')
+        
+        return jsonify({
+            'vacantes': vacantes,
+            'estatus_catalogo': estatus_catalogo,
+            'total_vacantes': total_vacantes,
+            'vacantes_activas': vacantes_activas,
+            'total_postulaciones': total_postulaciones
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+#---------- END RECLUTADOR DASHBOARD ---------
 
 #---------- RUTA DE CIERRE DE SESIÓN ----------
 @app.route('/logout')
@@ -547,4 +1115,3 @@ def editar_perfil_usuario():
 
 if __name__ == "__main__":
     app.run(debug=True)
-    

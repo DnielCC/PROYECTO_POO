@@ -9,7 +9,7 @@ class ConexionDB():
                 host='localhost',
                 user='root',
                 password='123456789', #Agregar password 
-                database='bolsa_trabajo_1')
+                database='bolsa_trabajo_2')
             self.cursor = self.connection.cursor()
             self.errMss = ''
         except Exception as ex:
