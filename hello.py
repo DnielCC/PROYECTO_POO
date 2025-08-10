@@ -36,8 +36,20 @@ def show_signup():
         )
 
         if resultado == 'ok':
-            flash('¡Registro exitoso!', 'success')
-            return redirect(url_for('info'))
+            # Obtener el ID del usuario recién creado
+            user_query = conexion.get_datos(f"SELECT id FROM login WHERE correo = '{email}'")
+            if user_query:
+                user_id = user_query[0][0]
+                # Crear sesión automáticamente
+                session['user_id'] = user_id
+                session['user_type'] = tipo_usuario
+                session['username'] = email  # Usar email como username temporal
+                
+                flash('¡Registro exitoso! Ahora completa tu información.', 'success')
+                return redirect(url_for('info'))
+            else:
+                flash('Usuario creado pero error al obtener ID. Por favor inicia sesión.', 'error')
+                return redirect(url_for('user_login'))
         else:
             flash(f'Error al registrar: {resultado}', 'error')
 
