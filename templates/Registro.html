@@ -37,7 +37,7 @@
                 <!-- Campo Correo -->
                 <div class="form-group">
                     <label class="form-label" for="Correo">Correo</label>
-                    {{ form.email(class="form-input", placeholder="ejemplo@correo.com") }}
+                    {{ form.email(class="form-input", placeholder="ejemplo@correo.com",maxlength="50") }}
                     {% for error in form.email.errors %}
                     <span class="error-message">{{ error }}</span>
                     {% endfor %}
@@ -46,7 +46,7 @@
                 <!-- Campo Contraseña -->
                 <div class="form-group">
                     <label class="form-label" for="Contraseña">Contraseña</label>
-                    {{ form.password(class="form-input", placeholder="Mínimo 8 caracteres") }}
+                    {{ form.password(class="form-input", placeholder="Mínimo 8 caracteres",maxlength="30") }}
                     {% for error in form.password.errors %}
                     <span class="error-message">{{ error }}</span>
                     {% endfor %}
@@ -55,7 +55,7 @@
                 <!-- Campo Confirmar Contraseña -->
                 <div class="form-group">
                     <label class="form-label" for="confirmar">Confirma contraseña</label>
-                    {{ form.confirmpassword(class="form-input", placeholder="Repite tu contraseña") }}
+                    {{ form.confirmpassword(class="form-input", placeholder="Repite tu contraseña",maxlength="30") }}
                     {% for error in form.confirmpassword.errors %}
                     <span class="error-message">{{ error }}</span>
                     {% endfor %}
