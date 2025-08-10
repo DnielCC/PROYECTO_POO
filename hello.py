@@ -465,6 +465,86 @@ def logout():
     return redirect(url_for('inicio'))
 #----------------------------------------------
 
+#---------- RUTA DE EDITAR PERFIL ----------
+@app.route('/user/editar_perfil', methods=['GET', 'POST'])
+def editar_perfil_usuario():
+    if 'user_id' not in session:
+        flash('Debes iniciar sesión para continuar.', 'error')
+        return redirect(url_for('user_login'))
+
+    user_id = session['user_id']
+
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        apellidos = request.form.get('apellidos')
+        empleo = request.form.get('empleos_deseados')
+        experiencia = request.form.get('experiencia_previa')
+        grado = request.form.get('grado_estudio')
+        ciudad = request.form.get('ciudad')
+        cp = request.form.get('codigo_postal')
+
+        try:
+            # Buscar IDs relacionados igual que en info()
+            id_empleo = conexion.get_datos(f"SELECT id FROM empleos WHERE empleo LIKE BINARY '{empleo}' LIMIT 1")[0][0]
+            id_exp = conexion.get_datos(f"SELECT id FROM experiencia WHERE experiencia LIKE BINARY '{experiencia}' LIMIT 1")[0][0]
+            id_grado = conexion.get_datos(f"SELECT id FROM grado_estudios WHERE grado LIKE BINARY '{grado}' LIMIT 1")[0][0]
+            id_ciudad = conexion.get_datos(f"SELECT id FROM ciudad_referencia WHERE ciudad LIKE BINARY '{ciudad}' LIMIT 1")[0][0]
+
+            # Insertar CP si no existe
+            id_cp_data = conexion.get_datos(f"SELECT id FROM cp WHERE cp = '{cp}' LIMIT 1")
+            if not id_cp_data:
+                conexion.insert_datos(f"INSERT INTO cp (cp) VALUES ('{cp}')")
+                id_cp_data = conexion.get_datos(f"SELECT id FROM cp WHERE cp = '{cp}' ORDER BY id DESC LIMIT 1")
+            id_cp = id_cp_data[0][0]
+
+            # Actualizar datos
+            update_query = f"""
+                UPDATE informacion
+                SET nombre = '{nombre}', apellidos = '{apellidos}',
+                    id_empleos = {id_empleo}, id_experiencia = {id_exp},
+                    id_grado_estudios = {id_grado}, id_ciudad = {id_ciudad},
+                    id_cp = {id_cp}
+                WHERE id_usuario = {user_id}
+            """
+            conexion.insert_datos(update_query)
+
+            flash('Perfil actualizado correctamente.', 'success')
+            return redirect(url_for('perfil_usuario'))
+
+        except Exception as e:
+            flash(f'Error al actualizar: {e}', 'error')
+
+    # Si es GET, traer datos actuales para mostrarlos en el formulario
+    query = f"""
+        SELECT nombre, apellidos, empleos.empleo, experiencia.experiencia, 
+               grado_estudios.grado, ciudad_referencia.ciudad, cp.cp
+        FROM informacion
+        INNER JOIN empleos ON informacion.id_empleos = empleos.id
+        INNER JOIN experiencia ON informacion.id_experiencia = experiencia.id
+        INNER JOIN grado_estudios ON informacion.id_grado_estudios = grado_estudios.id
+        INNER JOIN ciudad_referencia ON informacion.id_ciudad = ciudad_referencia.id
+        INNER JOIN cp ON informacion.id_cp = cp.id
+        WHERE informacion.id_usuario = {user_id}
+    """
+    datos = conexion.get_datos(query)
+    if not datos:
+        flash("No tienes información registrada. Por favor complétala primero.", "info")
+        return redirect(url_for('info'))
+
+    usuario = {
+        'nombre': datos[0][0],
+        'apellidos': datos[0][1],
+        'empleo': datos[0][2],
+        'experiencia': datos[0][3],
+        'grado': datos[0][4],
+        'ciudad': datos[0][5],
+        'codigo_postal': datos[0][6]
+    }
+
+    return render_template('editar_perfil.html', usuario=usuario)
+#----------------------------------------------
+
+
 if __name__ == "__main__":
     app.run(debug=True)
     

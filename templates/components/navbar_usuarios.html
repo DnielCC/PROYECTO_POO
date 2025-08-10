@@ -19,6 +19,12 @@
                     <div class="nav-indicator"></div>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ url_for('logout') }}" class="nav-link {% if request.endpoint == 'logout' %}active{% endif %}">
+                    <span class="nav-text">Cerrar sesión</span>
+                    <div class="nav-indicator"></div>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>

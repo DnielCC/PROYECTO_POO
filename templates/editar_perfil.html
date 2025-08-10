@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil - Workify</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='C_registro_info.css') }}"> 
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <div class="content_froms">
+        <div id="h1-txt"> 
+            <h1>Editar Información Personal y Profesional</h1>
+            <p class="subtitle">Actualiza tu perfil para encontrar las mejores oportunidades</p>
+        </div>
+        
+        <div class="content_informacion">   
+            <form class="form-container" method="POST">
+                
+                <!-- Información Personal -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-user"></i>
+                        Información Personal
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="nombre">Nombre(s)</label>
+                            <input type="text" id="nombre" name="nombre" value="{{ usuario.nombre }}" required>
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="apellidos">Apellidos</label>
+                            <input type="text" id="apellidos" name="apellidos" value="{{ usuario.apellidos }}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Profesional -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-briefcase"></i>
+                        Información Profesional
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="empleos_deseados">Empleos Deseados</label>
+                            <select id="empleos_deseados" name="empleos_deseados" required>
+                                <option value="">Selecciona un empleo deseado</option>
+                                {% for opcion in [
+                                    "Becario","Auxiliar en Sistemas","Desarrollador Junior","Técnico en Informática",
+                                    "Soporte Técnico","Analista de Datos","Administrador de Sistemas","Programador Web",
+                                    "Diseñador Web","Consultor IT"
+                                ] %}
+                                    <option value="{{ opcion }}" {% if usuario.empleo == opcion %}selected{% endif %}>{{ opcion }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="experiencia_previa">Experiencia Previa</label>
+                            <select id="experiencia_previa" name="experiencia_previa" required>
+                                <option value="">Selecciona tu experiencia</option>
+                                {% for opcion in [
+                                    "Sin experiencia","Menos de 1 año","1-2 años","3-5 años",
+                                    "5-10 años","Más de 10 años"
+                                ] %}
+                                    <option value="{{ opcion }}" {% if usuario.experiencia == opcion %}selected{% endif %}>{{ opcion }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="grado_estudio">Grado de Estudio</label> 
+                            <select id="grado_estudio" name="grado_estudio" required>
+                                <option value="">Selecciona tu grado de estudio</option>
+                                {% for opcion in [
+                                    "Secundaria","Preparatoria/Bachillerato","Técnico Superior",
+                                    "Licenciatura en curso","Licenciatura terminada",
+                                    "Ingeniería en curso","Ingeniería terminada"
+                                ] %}
+                                    <option value="{{ opcion }}" {% if usuario.grado == opcion %}selected{% endif %}>{{ opcion }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información de Ubicación -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Información de Ubicación
+                    </h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="select_ciudades">Ciudad de Residencia</label>
+                            <select id="select_ciudades" name="ciudad" required>
+                                <option value="">Selecciona tu ciudad</option>
+                                {% for opcion in [
+                                    "Amealco de Bonfil","Arroyo Seco","Cadereyta de Montes","Colón",
+                                    "Corregidora","Ezequiel Montes","Huimilpan","Jalpan de Serra",
+                                    "Landa de Matamoros","El Marqués","Pedro Escobedo","Peñamiller",
+                                    "Pinal de Amoles","Querétaro","San Joaquín","San Juan del Río",
+                                    "Tequisquiapan","Tolimán"
+                                ] %}
+                                    <option value="{{ opcion }}" {% if usuario.ciudad == opcion %}selected{% endif %}>{{ opcion }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="codigo_postal">Código Postal</label>
+                            <input type="text" id="codigo_postal" name="codigo_postal" value="{{ usuario.codigo_postal }}" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="submit-container">
+                    <button type="submit" id="formsubmit">
+                        <i class="fas fa-save"></i>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
