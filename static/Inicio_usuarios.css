@@ -640,45 +640,7 @@
                 gap: 1rem;
             }
 
-                    .vacante-actions {
-            flex-direction: column;
+            .vacante-actions {
+                flex-direction: column;
+            }
         }
-    }
-
-    /* Estilos para cuando no hay vacantes */
-    .no-vacantes {
-        text-align: center;
-        padding: 3rem 1rem;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        margin: 2rem 0;
-    }
-
-    .no-vacantes p {
-        font-size: 1.1rem;
-        color: #6b7280;
-        margin-bottom: 1rem;
-    }
-
-    /* Estilos para botones deshabilitados */
-    .btn-apply:disabled {
-        background-color: #6c757d;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-
-    .btn-apply:disabled:hover {
-        transform: none;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Estilos para las tarjetas de vacantes dinámicas */
-    .job-card[data-vacante-id] {
-        transition: all 0.3s ease;
-    }
-
-    .job-card[data-vacante-id]:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
